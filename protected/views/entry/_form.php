@@ -41,6 +41,12 @@ jQuery('.dyndatetime').dynDateTime({
 	</div>
 	
 	<div class="row">
+		<?php echo $form->labelEx($model,'tags'); ?>
+		<?php echo $form->textField($model,'tags',array('size'=>60,'maxlength'=>255)); ?>
+		<?php echo $form->error($model,'tags'); ?>
+	</div>
+	
+	<div class="row">
 		<?php echo $form->labelEx($model,'startDate'); ?>
 		<?php echo $form->textField($model, 'startDate', array('size'=>20,'maxlength'=>20,'class'=>'dyndatetime')); ?>
 		<?php echo $form->error($model,'startDate'); ?>

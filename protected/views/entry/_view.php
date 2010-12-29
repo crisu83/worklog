@@ -15,6 +15,10 @@
 	<b><?php echo CHtml::encode($data->getAttributeLabel('comment')); ?>:</b>
 	<?php echo CHtml::encode($data->comment); ?>
 	<br />
+	
+	<b><?php echo CHtml::encode($data->getAttributeLabel('tags')); ?>:</b>
+	<?php echo CHtml::encode($data->tags); ?>
+	<br />
 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('startDate')); ?>:</b>
 	<?php echo CHtml::encode($data->startDate); ?>

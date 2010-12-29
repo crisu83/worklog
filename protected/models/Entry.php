@@ -8,6 +8,7 @@
  * @property integer $ownerId
  * @property integer $assignmentId
  * @property string $comment
+ * @property string $tags
  * @property string $startDate
  * @property string $endDate
  * @property integer $deleted
@@ -41,10 +42,10 @@ class Entry extends CActiveRecord
 		return array(
 			array('ownerId, assignmentId, comment', 'required'),
 			array('ownerId, assignmentId', 'numerical', 'integerOnly'=>true),
-			array('endDate', 'safe'),
+			array('tags, startDate, endDate', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, ownerId, assignmentId, comment, startDate, endDate', 'safe', 'on'=>'search'),
+			array('id, ownerId, assignmentId, comment, tags, startDate, endDate', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -69,6 +70,7 @@ class Entry extends CActiveRecord
 			'ownerId'       =>'Owner',
 			'assignmentId'	=>'Assignment',
 			'comment'       =>'Comment',
+			'tags'			=>'Tags',
 			'startDate'     =>'Start Date',
 			'endDate'       =>'End Date',
 		);
@@ -89,6 +91,7 @@ class Entry extends CActiveRecord
 		$criteria->compare('ownerId',$this->ownerId);
 		$criteria->compare('assignmentId',$this->assignmentId);
 		$criteria->compare('comment',$this->comment,true);
+		$criteria->compare('tags',$this->tags,true);
 		$criteria->compare('startDate',$this->startDate,true);
 		$criteria->compare('endDate',$this->endDate,true);
 

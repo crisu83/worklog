@@ -31,7 +31,6 @@ $this->menu=array(
 			'value'=>'$data->project->name',
 		),		
 		'name',
-		'tags',
 		'created',
 		'updated',
 		array(

@@ -33,6 +33,7 @@ $this->menu=array(
 			'value'=>$model->assignment->name,
 		),
 		'comment',
+		'tags',	
 		'startDate',
 		'endDate',
 	),

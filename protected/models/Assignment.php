@@ -7,7 +7,6 @@
  * @property integer $id
  * @property integer $projectId
  * @property string $name
- * @property string $tags
  * @property string $created
  * @property string $updated
  * @property integer $deleted
