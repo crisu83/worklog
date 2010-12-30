@@ -1,16 +1,3 @@
-<?php Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/dyndatetime/jquery.dynDateTime.min.js', CClientScript::POS_END); ?>
-<?php Yii::app()->clientScript->registerScriptFile(Yii::app()->baseUrl.'/js/dyndatetime/lang/calendar-en.js', CClientScript::POS_END); ?>
-<?php Yii::app()->clientScript->registerScript('dynDateTime', "
-jQuery('.dyndatetime').dynDateTime({
-	showsTime: true,
-	ifFormat: '%Y-%m-%d %H:%M',
-	electric: false,
-	singleClick: false,
-	displayArea: '.siblings(\'.dtcDisplayArea\')',
-	button: '.next()'
-});
-"); ?>
-
 <div class="form">
 
 <?php $form=$this->beginWidget('CActiveForm', array(
@@ -48,13 +35,43 @@ jQuery('.dyndatetime').dynDateTime({
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'startDate'); ?>
-		<?php echo $form->textField($model, 'startDate', array('size'=>20,'maxlength'=>20,'class'=>'dyndatetime')); ?>
+		<?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+			'model'=>$model,
+			'attribute'=>'startDate',
+			// additional javascript options for the date picker plugin
+			'options'=>array(
+				'dateFormat'=>'yy-mm-dd',
+			),
+			'htmlOptions'=>array(
+				'class'=>'date-field',
+				'maxlength'=>10,
+			),
+			'themeUrl'=>Yii::app()->request->baseUrl.'/css/jui',
+			'theme'=>'redmond',
+		)); ?>
+		<?php echo $form->textField($model, 'startTimeHours', array('class'=>'time-field','maxlength'=>2)); ?>
+		<?php echo $form->textField($model, 'startTimeMinutes', array('class'=>'time-field','maxlength'=>2)); ?>
 		<?php echo $form->error($model,'startDate'); ?>
 	</div>
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'endDate'); ?>
-		<?php echo $form->textField($model, 'endDate', array('size'=>20,'maxlength'=>20,'class'=>'dyndatetime')); ?>
+		<?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+			'model'=>$model,
+			'attribute'=>'endDate',
+			// additional javascript options for the date picker plugin
+			'options'=>array(
+				'dateFormat'=>'yy-mm-dd',
+			),
+			'htmlOptions'=>array(
+				'class'=>'date-field',
+				'maxlength'=>10,
+			),
+			'themeUrl'=>Yii::app()->request->baseUrl.'/css/jui',
+			'theme'=>'redmond',
+		)); ?>
+		<?php echo $form->textField($model, 'endTimeHours', array('class'=>'time-field','maxlength'=>2)); ?>
+		<?php echo $form->textField($model, 'endTimeMinutes', array('class'=>'time-field','maxlength'=>2)); ?>
 		<?php echo $form->error($model,'endDate'); ?>
 	</div>
 

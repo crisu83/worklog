@@ -1,0 +1,16 @@
+/* 
+    Document   : default
+    Created on : 30.12.2010, 0:37:33
+    Author     : Christoffer Niska
+    Description:
+        Defines the default WorkLog style.
+*/
+
+.date-field { width:80px; }
+.time-field { width:20px; }
+
+/*
+FIXME: For some reason the widgets wont show up when they
+are applied the following class if clipping is enabled.
+*/
+.ui-helper-hidden-accessible { clip:auto !important; }

@@ -16,6 +16,14 @@
 class Entry extends CActiveRecord
 {
 	/**
+	 * FIXME: Possibly move to a form model?
+	 */
+	public $startTimeHours;
+	public $startTimeMinutes;
+	public $endTimeHours;
+	public $endTimeMinutes;
+	
+	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Entry the static model class
 	 */
@@ -40,13 +48,41 @@ class Entry extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('ownerId, assignmentId, comment', 'required'),
+			array('ownerId, assignmentId, comment, startDate, endDate', 'required'),
 			array('ownerId, assignmentId', 'numerical', 'integerOnly'=>true),
-			array('tags, startDate, endDate', 'safe'),
+			array('tags', 'safe'),
+			array('startTimeHours, endTimeHours', 'validateTimeHours'),
+			array('startTimeMinutes, endTimeMinutes', 'validateTimeMinutes'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, ownerId, assignmentId, comment, tags, startDate, endDate', 'safe', 'on'=>'search'),
 		);
+	}
+	
+	/**
+	 * This is the 'validateTimeHours' validator as declared in rules().
+	 * @param string the name of the attribute to be validated.
+	 * @param array additional parameters.
+	 */
+	public function validateTimeHours($attribute, $params)
+	{
+		if( $this->{$attribute}<0 )
+			$this->addError($attribute, 'Hours cannot be less than 0.');
+		else if( $this->{$attribute}>23 )
+			$this->addError($attribute, 'Hours cannot be greater than 23.');
+	}
+	
+	/**
+	 * This is the 'validateTimeMinutes' validator as declared in rules().
+	 * @param string the name of the attribute to be validated.
+	 * @param array additional parameters.
+	 */
+	public function validateTimeMinutes($attribute, $params)
+	{
+		if( $this->{$attribute}<0 )
+			$this->addError($attribute, 'Minutes cannot be less than 0.');
+		else if( $this->{$attribute}>59 )
+			$this->addError($attribute, 'Minutes cannot be greater than 59.');
 	}
 
 	/**
@@ -98,5 +134,51 @@ class Entry extends CActiveRecord
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
+	}
+
+	/**
+	 * Creates a mysql date from parts.
+	 * @param string the date (yy-mm-dd)
+	 * @param int the amount of hours.
+	 * @param int the amount of minutes.
+	 * @param int the amount of seconds.
+	 * @return string the mysql date.
+	 */
+	public static function createMySQLDate($date, $hour, $minute, $second=null)
+	{		
+		// Explode the date into parts
+		// and extract the year, month and day.
+		$dateParts = explode('-', $date);
+		list($year, $month, $day) = $dateParts; // evil list() muahaha!
+
+		// Convert the date into a timestamp.
+		$timestamp = mktime($hour, $minute, $second, $month, $day, $year);
+		
+		// Return the timestamp in mysql date format.
+		return date('Y-m-d H:i:s', $timestamp);
+	}
+	
+	/**
+	 * Parses the start date into three different fields
+	 * (date, hours and minutes).
+	 */
+	public function parseStartDate()
+	{
+		$date = date_parse($this->startDate);
+		$this->startDate = $date['year'].'-'.$date['month'].'-'.$date['day'];
+		$this->startTimeHours = $date['hour'];
+		$this->startTimeMinutes = $date['minute'];
+	}
+	
+	/**
+	 * Parses the end date into three different fields
+	 * (date, hours and minutes).
+	 */
+	public function parseEndDate()
+	{
+		$date = date_parse($this->endDate);
+		$this->endDate = $date['year'].'-'.$date['month'].'-'.$date['day'];
+		$this->endTimeHours = $date['hour'];
+		$this->endTimeMinutes = $date['minute'];
 	}
 }
