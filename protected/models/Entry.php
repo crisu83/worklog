@@ -16,6 +16,7 @@
 class Entry extends CActiveRecord
 {
 	/**
+	 *
 	 * FIXME: Possibly move to a form model?
 	 */
 	public $startTimeHours;
@@ -48,7 +49,7 @@ class Entry extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('ownerId, assignmentId, comment, startDate, endDate', 'required'),
+			array('ownerId, assignmentId, comment, startDate, startTimeHours, startTimeMinutes, endDate, endTimeHours, endTimeMinutes', 'required'),
 			array('ownerId, assignmentId', 'numerical', 'integerOnly'=>true),
 			array('tags', 'safe'),
 			array('startTimeHours, endTimeHours', 'validateTimeHours'),
@@ -143,19 +144,29 @@ class Entry extends CActiveRecord
 	 * @param int the amount of minutes.
 	 * @param int the amount of seconds.
 	 * @return string the mysql date.
+	 * 
+	 * FIXME: Improve this because the arguments do not really make any sense,
+	 * the method should be more generic and maybe even moved to a different class.
 	 */
 	public static function createMySQLDate($date, $hour, $minute, $second=null)
-	{		
-		// Explode the date into parts
-		// and extract the year, month and day.
-		$dateParts = explode('-', $date);
-		list($year, $month, $day) = $dateParts; // evil list() muahaha!
+	{
+		// Make sure that the date has been given
+		// before starting to create a date.
+		if( $date!=='' )
+		{
+			// Explode the date into parts
+			// and extract the year, month and day.
+			$dateParts = explode('-', $date);
+			list($year, $month, $day) = $dateParts; // evil list() muahaha!
 
-		// Convert the date into a timestamp.
-		$timestamp = mktime($hour, $minute, $second, $month, $day, $year);
+			// Convert the date into a timestamp.
+			$timestamp = mktime($hour, $minute, $second, $month, $day, $year);
+
+			// Return the timestamp in mysql date format.
+			$date = date('Y-m-d H:i:s', $timestamp);
+		}
 		
-		// Return the timestamp in mysql date format.
-		return date('Y-m-d H:i:s', $timestamp);
+		return $date;
 	}
 	
 	/**
@@ -164,10 +175,10 @@ class Entry extends CActiveRecord
 	 */
 	public function parseStartDate()
 	{
-		$date = date_parse($this->startDate);
-		$this->startDate = $date['year'].'-'.$date['month'].'-'.$date['day'];
-		$this->startTimeHours = $date['hour'];
-		$this->startTimeMinutes = $date['minute'];
+		$timestamp = strtotime($this->startDate);
+		$this->startDate = date('Y-m-d', $timestamp);
+		$this->startTimeHours = date('H', $timestamp);
+		$this->startTimeMinutes = date('i', $timestamp);
 	}
 	
 	/**
@@ -176,9 +187,9 @@ class Entry extends CActiveRecord
 	 */
 	public function parseEndDate()
 	{
-		$date = date_parse($this->endDate);
-		$this->endDate = $date['year'].'-'.$date['month'].'-'.$date['day'];
-		$this->endTimeHours = $date['hour'];
-		$this->endTimeMinutes = $date['minute'];
+		$timestamp = strtotime($this->endDate);
+		$this->endDate = date('Y-m-d', $timestamp);
+		$this->endTimeHours = date('H', $timestamp);
+		$this->endTimeMinutes = date('i', $timestamp);
 	}
 }
