@@ -49,11 +49,10 @@ class Entry extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('ownerId, assignmentId, comment, startDate, startTimeHours, startTimeMinutes, endDate, endTimeHours, endTimeMinutes', 'required'),
+			array('ownerId, assignmentId, comment, startDate, endDate', 'required'),
 			array('ownerId, assignmentId', 'numerical', 'integerOnly'=>true),
 			array('tags', 'safe'),
-			array('startTimeHours, endTimeHours', 'validateTimeHours'),
-			array('startTimeMinutes, endTimeMinutes', 'validateTimeMinutes'),
+
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
 			array('id, ownerId, assignmentId, comment, tags, startDate, endDate', 'safe', 'on'=>'search'),

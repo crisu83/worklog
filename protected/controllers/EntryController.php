@@ -68,15 +68,8 @@ class EntryController extends Controller
 		if(isset($_POST['Entry']))
 		{
 			$model->attributes=$_POST['Entry'];
-			if($model->validate())
-			{
-				// Append the start- and end time to respective fields.
-				$model->startDate = Entry::createMySQLDate($model->startDate, $model->startTimeHours, $model->startTimeMinutes);
-				$model->endDate = Entry::createMySQLDate($model->endDate, $model->endTimeHours, $model->endTimeMinutes);
-				
-				if($model->save(false))
-					$this->redirect(array('view','id'=>$model->id));
-			}
+			if($model->save())
+				$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('create',array(
@@ -99,19 +92,9 @@ class EntryController extends Controller
 		if(isset($_POST['Entry']))
 		{
 			$model->attributes=$_POST['Entry'];
-			if($model->validate())
-			{
-				// Append the start- and end time to respective fields.
-				$model->startDate = Entry::createMySQLDate($model->startDate, $model->startTimeHours, $model->startTimeMinutes);
-				$model->endDate = Entry::createMySQLDate($model->endDate, $model->endTimeHours, $model->endTimeMinutes);
-				
-				if($model->save(false))
-					$this->redirect(array('view','id'=>$model->id));
-			}
+			if($model->save())
+				$this->redirect(array('view','id'=>$model->id));
 		}
-		
-		$model->parseStartDate();
-		$model->parseEndDate();
 
 		$this->render('update',array(
 			'model'=>$model,

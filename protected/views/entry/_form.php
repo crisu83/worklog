@@ -35,43 +35,39 @@
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'startDate'); ?>
-		<?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+		<?php /*$this->widget('zii.widgets.jui.CJuiDatePicker', array(
 			'model'=>$model,
 			'attribute'=>'startDate',
-			// additional javascript options for the date picker plugin
 			'options'=>array(
 				'dateFormat'=>'yy-mm-dd',
 			),
 			'htmlOptions'=>array(
 				'class'=>'date-field',
-				'maxlength'=>10,
+				'maxlength'=>20,
 			),
 			'themeUrl'=>Yii::app()->request->baseUrl.'/css/jui',
 			'theme'=>'redmond',
-		)); ?>
-		<?php echo $form->textField($model, 'startTimeHours', array('class'=>'time-field','maxlength'=>2)); ?>
-		<?php echo $form->textField($model, 'startTimeMinutes', array('class'=>'time-field','maxlength'=>2)); ?>
+		));*/ ?>
+		<?php echo $form->textField($model,'startDate',array('class'=>'date-field','maxlength'=>20)); ?>
 		<?php echo $form->error($model,'startDate'); ?>
 	</div>
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'endDate'); ?>
-		<?php $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+		<?php /*$this->widget('zii.widgets.jui.CJuiDatePicker', array(
 			'model'=>$model,
 			'attribute'=>'endDate',
-			// additional javascript options for the date picker plugin
 			'options'=>array(
 				'dateFormat'=>'yy-mm-dd',
 			),
 			'htmlOptions'=>array(
 				'class'=>'date-field',
-				'maxlength'=>10,
+				'maxlength'=>20,
 			),
 			'themeUrl'=>Yii::app()->request->baseUrl.'/css/jui',
 			'theme'=>'redmond',
-		)); ?>
-		<?php echo $form->textField($model, 'endTimeHours', array('class'=>'time-field','maxlength'=>2)); ?>
-		<?php echo $form->textField($model, 'endTimeMinutes', array('class'=>'time-field','maxlength'=>2)); ?>
+		));*/ ?>
+		<?php echo $form->textField($model,'endDate',array('class'=>'date-field','maxlength'=>20)); ?>
 		<?php echo $form->error($model,'endDate'); ?>
 	</div>
 

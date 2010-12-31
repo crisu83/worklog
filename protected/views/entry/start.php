@@ -39,7 +39,11 @@
 	</div>
 
 	<div class="row buttons">
-		<?php echo CHtml::submitButton('Start'); ?> | <?php echo CHtml::link('Cancel', Yii::app()->homeUrl); ?>
+		<?php $this->widget('zii.widgets.jui.CJuiButton', array(
+			'name'=>'submit',
+			'caption'=>'Start',
+		)); ?>
+		<?php /*echo CHtml::submitButton('Start');*/ ?> | <?php echo CHtml::link('Cancel', Yii::app()->homeUrl); ?>
 	</div>
 
 <?php $this->endWidget(); ?>
