@@ -97,7 +97,6 @@ class Assignment extends CActiveRecord
 		$criteria->compare('id',$this->id);
 		$criteria->compare('projectId',$this->projectId);
 		$criteria->compare('name',$this->name,true);
-		$criteria->compare('tags',$this->tags,true);
 		$criteria->compare('created',$this->created,true);
 		$criteria->compare('updated',$this->updated,true);
 		$criteria->compare('deleted',$this->deleted);

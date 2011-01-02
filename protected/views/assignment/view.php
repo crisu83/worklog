@@ -33,3 +33,31 @@ $this->menu=array(
 		'updated',
 	),
 )); ?>
+
+<h2>Entries</h2>
+
+<?php $this->widget('zii.widgets.grid.CGridView', array(
+	'id'=>'assignment-entry-grid',
+	'dataProvider'=>$entryDataProvider,
+	'columns'=>array(
+		array(
+			'header'=>'#',
+			'value'=>'$data->id',
+		),
+		array(
+			'name'=>'assignmentId',
+			'value'=>'$data->assignment->name',
+		),
+		array(
+			'name'=>'ownerId',
+			'value'=>'$data->owner->name',
+		),
+		'comment',
+		'tags',
+		'startDate',
+		'endDate',
+		array(
+			'class'=>'CButtonColumn',
+		),
+	),
+)); ?>

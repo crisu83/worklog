@@ -49,8 +49,18 @@ class AssignmentController extends Controller
 	 */
 	public function actionView($id)
 	{
+		$model=$this->loadModel($id);
+		
+		$entryDataProvider=new CActiveDataProvider('Entry', array(
+			'criteria'=>array(
+				'condition'=>'assignmentId=:id',
+				'params'=>array(':id'=>$model->id)
+			),
+		));
+		
 		$this->render('view',array(
-			'model'=>$this->loadModel($id),
+			'model'=>$model,
+			'entryDataProvider'=>$entryDataProvider,
 		));
 	}
 
