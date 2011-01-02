@@ -7,10 +7,38 @@
 */
 
 .date-field { width:140px; }
-.time-field { width:20px; }
+
+div.form .row { margin:10px 0; }
+div.form label { margin:0 0 5px 0; }
+div.form input { margin:0; outline:none !important; }
+div.form input[type=text],
+div.form input[type=password],
+div.form textarea { 
+	padding:3px; 
+	border:1px solid lightGrey; 
+	-webkit-border-radius:4px;
+	-moz-border-radius:4px; 
+	background-image: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0.14, rgb(255,255,255)),
+		color-stop(0.5, rgb(250,250,250))
+	);
+	background-image: -moz-linear-gradient(
+		center top,
+		rgb(255,255,255) 14%,
+		rgb(250,250,250) 50%
+	);
+}
+div.form select {
+	min-width:160px;
+}
+div.form input {  }
 
 /*
-FIXME: For some reason the widgets wont show up when they
-are applied the following class if clipping is enabled.
+	Query UI style.
 */
+.ui-widget { margin:0; font-size:11px; }
+
 .ui-helper-hidden-accessible { clip:auto !important; }

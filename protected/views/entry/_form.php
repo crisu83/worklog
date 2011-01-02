@@ -11,13 +11,27 @@
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'assignmentId'); ?>
-		<?php echo $form->dropDownList($model,'assignmentId',CHtml::listData(Assignment::model()->findAll('deleted=0'),'id','name')); ?>
+		<?php $this->widget('application.extensions.juiselectmenu.JuiSelectMenu', array(
+			'model'=>$model,
+			'attribute'=>'assignmentId',
+			'items'=>CHtml::listData(Assignment::model()->findAll('deleted=0'),'id','name'),
+			'options'=>array(
+				'style'=>'dropdown',
+			)
+		)); ?>
 		<?php echo $form->error($model,'assignmentId'); ?>
 	</div>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'ownerId'); ?>
-		<?php echo $form->dropDownList($model,'ownerId',CHtml::listData(User::model()->findAll('deleted=0'),'id','name')); ?>
+		<?php $this->widget('application.extensions.juiselectmenu.JuiSelectMenu', array(
+			'model'=>$model,
+			'attribute'=>'ownerId',
+			'items'=>CHtml::listData(User::model()->findAll('deleted=0'),'id','name'),
+			'options'=>array(
+				'style'=>'dropdown',
+			)
+		)); ?>
 		<?php echo $form->error($model,'ownerId'); ?>
 	</div>
 
@@ -35,38 +49,12 @@
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'startDate'); ?>
-		<?php /*$this->widget('zii.widgets.jui.CJuiDatePicker', array(
-			'model'=>$model,
-			'attribute'=>'startDate',
-			'options'=>array(
-				'dateFormat'=>'yy-mm-dd',
-			),
-			'htmlOptions'=>array(
-				'class'=>'date-field',
-				'maxlength'=>20,
-			),
-			'themeUrl'=>Yii::app()->request->baseUrl.'/css/jui',
-			'theme'=>'redmond',
-		));*/ ?>
 		<?php echo $form->textField($model,'startDate',array('class'=>'date-field','maxlength'=>20)); ?>
 		<?php echo $form->error($model,'startDate'); ?>
 	</div>
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'endDate'); ?>
-		<?php /*$this->widget('zii.widgets.jui.CJuiDatePicker', array(
-			'model'=>$model,
-			'attribute'=>'endDate',
-			'options'=>array(
-				'dateFormat'=>'yy-mm-dd',
-			),
-			'htmlOptions'=>array(
-				'class'=>'date-field',
-				'maxlength'=>20,
-			),
-			'themeUrl'=>Yii::app()->request->baseUrl.'/css/jui',
-			'theme'=>'redmond',
-		));*/ ?>
 		<?php echo $form->textField($model,'endDate',array('class'=>'date-field','maxlength'=>20)); ?>
 		<?php echo $form->error($model,'endDate'); ?>
 	</div>

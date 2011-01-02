@@ -11,7 +11,14 @@
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'projectId'); ?>
-		<?php echo $form->dropDownList($model,'projectId',CHtml::listData(Project::model()->findAll('deleted=0'),'id','name')); ?>
+		<?php $this->widget('application.extensions.juiselectmenu.JuiSelectMenu', array(
+			'model'=>$model,
+			'attribute'=>'projectId',
+			'items'=>CHtml::listData(Project::model()->findAll('deleted=0'),'id','name'),
+			'options'=>array(
+				'style'=>'dropdown',
+			)
+		)); ?>
 		<?php echo $form->error($model,'projectId'); ?>
 	</div>
 

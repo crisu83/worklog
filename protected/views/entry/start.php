@@ -10,13 +10,22 @@
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'projectId'); ?>
-		<?php echo $form->dropDownList($model,'projectId',CHtml::listData(Project::model()->findAll('deleted=0'),'id','name')); ?>
+		<?php $this->widget('application.extensions.juiselectmenu.JuiSelectMenu', array(
+			'debug'=>true,
+			'model'=>$model,
+			'attribute'=>'projectId',
+			'items'=>CHtml::listData(Project::model()->findAll('deleted=0'),'id','name'),
+			'options'=>array(
+				'style'=>'dropdown',
+			)
+		)); ?>
 	</div>
 
 	<div class="row">
 		<?php echo $form->labelEx($model,'name'); ?>
 		<?php $this->widget('zii.widgets.jui.CJuiAutoComplete', array(
-			'name'=>'name',
+			'model'=>$model,
+			'attribute'=>'name',
 			'source'=>Yii::app()->createUrl('assignment/juiAutoComplete'),
 			// additional javascript options for the autocomplete plugin
 			'options'=>array(
@@ -42,10 +51,9 @@
 		<?php $this->widget('zii.widgets.jui.CJuiButton', array(
 			'name'=>'submit',
 			'caption'=>'Start',
-		)); ?>
-		<?php /*echo CHtml::submitButton('Start');*/ ?> | <?php echo CHtml::link('Cancel', Yii::app()->homeUrl); ?>
+		)); ?> | <?php echo CHtml::link('Cancel', Yii::app()->homeUrl); ?>
 	</div>
 
 <?php $this->endWidget(); ?>
 
-</div><!-- form -->
+</div><!-- form --
