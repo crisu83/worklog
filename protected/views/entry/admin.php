@@ -35,7 +35,6 @@ $this->menu=array(
 			'value'=>'$data->owner->name',
 		),
 		'comment',
-		'tags',
 		'startDate',
 		'endDate',
 		array(

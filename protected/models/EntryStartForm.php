@@ -5,7 +5,9 @@ class EntryStartForm extends CFormModel
 	public $projectId;
 	public $name;
 	public $comment;
-	public $tags;
+	public $tags=array();
+	public $startDate;
+	public $endDate;
 	
 	/**
 	 * Declares the validation rules.
@@ -28,6 +30,8 @@ class EntryStartForm extends CFormModel
 			'name'			=>'Name',
 			'comment'		=>'Comment',
 			'tags'			=>'Tags',
+			'startDate'		=>'Start date',
+			'endDate'		=>'End date',
 		);
 	}
 }

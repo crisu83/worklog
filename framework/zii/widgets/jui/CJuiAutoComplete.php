@@ -89,7 +89,7 @@ class CJuiAutoComplete extends CJuiInputWidget
 			$this->options['source']=CHtml::normalizeUrl($this->sourceUrl);
 		else
 			$this->options['source']=$this->source;
-
+		
 		$options=CJavaScript::encode($this->options);
 
 		$js = "jQuery('#{$id}').autocomplete($options);";

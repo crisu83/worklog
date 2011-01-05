@@ -6,6 +6,10 @@
         Defines the default WorkLog style.
 */
 
+ul.submenu { margin:0 0 20px 0; padding:0; list-style-type:none; }
+ul.submenu li { display:inline; margin:0 5px 0 0; }
+
+.tag-field { width:140px; }
 .date-field { width:140px; }
 
 div.form .row { margin:10px 0; }

@@ -43,8 +43,19 @@
 	
 	<div class="row">
 		<?php echo $form->labelEx($model,'tags'); ?>
-		<?php echo $form->textField($model,'tags',array('size'=>60,'maxlength'=>255)); ?>
-		<?php echo $form->error($model,'tags'); ?>
+		<?php $i=0; while( $i++<Yii::app()->params['tagFieldCount'] ): ?>
+			<?php $this->widget('zii.widgets.jui.CJuiAutoComplete',array(
+				'model'=>$model,
+				'attribute'=>'tags['.($i-1).']',
+				'source'=>Yii::app()->createUrl('tag/juiAutoComplete'),
+				'options'=>array(
+					'minLength'=>'2',
+				),
+				'htmlOptions'=>array(
+					'class'=>'tag-field',
+				),
+			)); ?>
+		<?php endwhile; ?>
 	</div>
 	
 	<div class="row">

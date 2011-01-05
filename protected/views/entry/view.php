@@ -33,7 +33,10 @@ $this->menu=array(
 			'value'=>$model->assignment->name,
 		),
 		'comment',
-		'tags',	
+		array(
+			'name'=>'tags',	
+			'value'=>implode(', ', $model->getTags()),
+		),
 		'startDate',
 		'endDate',
 	),

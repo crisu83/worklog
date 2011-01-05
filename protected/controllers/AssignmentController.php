@@ -157,28 +157,30 @@ class AssignmentController extends Controller
 		));
 	}
 	
-	public function actionJuiAutoComplete($projectId=null)
+	public function actionJuiAutoComplete($term, $project)
 	{
-		$criteria = new CDbCriteria();
+		$project = Project::model()->findByAttributes(array(
+			'name'=>urldecode($project),
+		));
 		
-		if( $projectId!==null )
+		if( $project instanceof Project )
 		{
-			$criteria->condition = 'projectId=:projectId';
-			$criteria->params = array(':projectId'=>$projectId);
-		}
-		
-		$assignments = Assignment::model()->findAll($criteria);
-		
-		if( $assignments!==array() )
-		{
-			$names = array();
-			foreach( $assignments as $assignment )
-				$names[] = $assignment->name;
+			$criteria=new CDbCriteria();
+			$criteria->addCondition('projectId='.$project->id);
+			$criteria->addSearchCondition('name',$term);
+			$criteria->order='name ASC';
 			
-			echo json_encode($names);
+			$assignments = Assignment::model()->findAll($criteria);
+
+			if( $assignments!==array() )
+			{
+				$names = array();
+				foreach( $assignments as $assignment )
+					$names[] = $assignment->name;
+
+				echo CJSON::encode($names);
+			}
 		}
-		else
-			echo '';
 		
 		// Terminate the application.
 		Yii::app()->end();

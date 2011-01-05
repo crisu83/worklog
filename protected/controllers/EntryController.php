@@ -92,9 +92,15 @@ class EntryController extends Controller
 		if(isset($_POST['Entry']))
 		{
 			$model->attributes=$_POST['Entry'];
+			$model->tags = $_POST['Entry']['tags'];
 			if($model->save())
+			{
+				$model->setTags($model->tags);
 				$this->redirect(array('view','id'=>$model->id));
+			}
 		}
+		
+		$model->tags = $model->getTags();
 
 		$this->render('update',array(
 			'model'=>$model,
@@ -154,10 +160,31 @@ class EntryController extends Controller
 		if( isset($_POST['EntryStartForm']) )
 		{
 			$model->attributes = $_POST['EntryStartForm'];
+			$model->tags = $_POST['EntryStartForm']['tags'];
 			
-			if( $model->validate() )
+			$assignment = Assignment::model()->findByAttributes(array(
+				'name'=>$model->name,
+			));
+			
+			if( $assignment===null )
 			{
-				
+				$assignment = new Assignment();
+				$assignment->projectId = $model->projectId;
+				$assignment->name = $model->name;
+				$assignment->save(false);
+			}
+						
+			$entry=new Entry();
+			$entry->ownerId = Yii::app()->user->id;
+			$entry->assignmentId = $assignment->id;
+			$entry->comment = $model->comment;
+			$entry->startDate = empty($entry->startDate)?date('Y-m-d H:i:s'):$entry->startDate;
+			$entry->endDate = empty($entry->endDate)?null:$entry->endDate;
+			
+			if($entry->save())
+			{
+				$entry->setTags($model->tags);
+				$this->redirect(Yii::app()->homeUrl);
 			}
 		}
 		
