@@ -30,16 +30,32 @@
 	<div id="mainmenu">
 		<?php $this->widget('zii.widgets.CMenu',array(
 			'items'=>array(
-				array('label'=>'Home', 'url'=>array('/site/index')),
-				array('label'=>'Entries', 'url'=>array('/entry/admin')),
-				array('label'=>'Assignments', 'url'=>array('/assignment/admin')),
-                array('label'=>'Projects', 'url'=>array('/project/admin')),
-				array('label'=>'Users', 'url'=>array('/user/admin')),
+				array('label'=>'Dashboard', 'url'=>array('/site/index'), 'visible'=>!Yii::app()->user->isGuest),
 				array('label'=>'Login', 'url'=>array('/site/login'), 'visible'=>Yii::app()->user->isGuest),
 				array('label'=>'Logout ('.Yii::app()->user->name.')', 'url'=>array('/site/logout'), 'visible'=>!Yii::app()->user->isGuest)
 			),
 		)); ?>
 	</div><!-- mainmenu -->
+
+	<?php if( Yii::app()->user->isGuest===false ): ?>
+		<div id="adminmenu">
+			<?php $this->widget('zii.widgets.CMenu',array(
+				'items'=>array(
+					array('label'=>'Administration:'),
+					array('label'=>'Entries', 'url'=>array('/entry/admin')),
+					array('label'=>'Assignments', 'url'=>array('/assignment/admin')),
+					array('label'=>'Projects', 'url'=>array('/project/admin')),
+					array('label'=>'Users', 'url'=>array('/user/admin')),
+				),
+			)); ?>	
+		</div>
+	<?php endif; ?>
+
+	<div id="currentTime">
+		<?php echo date('H:i:s'); ?>
+	</div>
+
+	<div class="clear">&nbsp;</div>
 
 	<?php $this->widget('zii.widgets.CBreadcrumbs', array(
 		'links'=>$this->breadcrumbs,

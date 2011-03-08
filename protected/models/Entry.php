@@ -8,17 +8,30 @@
  * @property integer $ownerId
  * @property integer $assignmentId
  * @property string $comment
- * @property string $tags
  * @property string $startDate
  * @property string $endDate
  * @property integer $deleted
  */
 class Entry extends CActiveRecord
 {
+	const STATE_STOPPED = 0;
+	const STATE_RUNNING = 1;
+	const STATE_PAUSED = 2;
+
 	/**
 	 * @property array list of tags associated to this entry.
 	 */
 	public $tags;
+
+	/**
+	 * @property integer the current state of this entry.
+	 */
+	public $state;
+
+	/**
+	 * @property integer the duration of this entry in seconds.
+	 */
+	public $duration;
 	
 	/**
 	 * Returns the static model of the specified AR class.
@@ -75,6 +88,7 @@ class Entry extends CActiveRecord
 			'assignmentId'	=>'Assignment',
 			'comment'       =>'Comment',
 			'tags'			=>'Tags',
+			'duration'      =>'Duration',
 			'startDate'     =>'Start Date',
 			'endDate'       =>'End Date',
 		);
@@ -103,8 +117,41 @@ class Entry extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-	
-	public function getTags()
+
+	/**
+	 * Returns the entry states.
+	 * @return array the states.
+	 */
+	public function getStates()
+	{
+		return array(
+			self::STATE_STOPPED=>'Stopped',
+			self::STATE_RUNNING=>'Running',
+			self::STATE_PAUSED=>'Paused',
+		);
+	}
+
+	/**
+	 * Returns this entries state as a string.
+	 * @throws Exception if the state is invalid.
+	 * @return the state string.
+	 */
+	public function getStateAsString()
+	{
+		$states = $this->getStates();
+
+		if( isset($states[ $this->state ])===false )
+			throw new Exception(Yii::t('error', 'Invalid entry state "{state}"', array('{state}'=>$this->state)));
+
+		return $states[ $this->state ];
+	}
+
+	/**
+	 * Returns the tags for this entry.
+	 * @param boolean $link whether to get the tags as links.
+	 * @return array the tags.
+	 */
+	public function getTags($link=true)
 	{
 		$criteria = new CDbCriteria();
 		$criteria->join = 'LEFT JOIN EntryTag t2 ON t.id=t2.tagId';
@@ -113,16 +160,57 @@ class Entry extends CActiveRecord
 		$criteria->order = 'name ASC';
 		
 		$tags = Tag::model()->findAll($criteria);
-		
+
 		$names = array();
 		foreach( $tags as $tag )
-			$names[] = $tag->name;
+			$names[] = $link===true ? CHtml::link($tag->name, array('//tag/search', 'id'=>$tag->id)) : $tag->name;
 		
 		return $names;
 	}
-	
+
+	/**
+	 * Returns the tags for this entry as a string.
+	 * @return string the tags.
+	 */
+	public function getTagsAsString()
+	{
+		$tags = $this->getTags();
+		$string = count($tags)>0 ? implode(', ', $tags) : 'None';
+		return $string;
+	}
+
+	/**
+	 * Sets the tags for this entry.
+	 * @param array $names the tags.
+	 */
 	public function setTags($names)
 	{
 		EntryTag::updateTags($names, $this->id);
+	}
+
+	/**
+	 * Sets the state for this entry.
+	 * @param integer $value the state.
+	 */
+	public function setState($value)
+	{
+		$this->state = $value;
+	}
+
+	/**
+	 * Returns the state for this entry.
+	 * @return the state.
+	 */
+	public function getState()
+	{
+		return $this->state;
+	}
+
+	public function getDuration()
+	{
+		if( $this->startDate!==null && $this->endDate!==null )
+			return strtotime($this->endDate) - strtotime($this->startDate);
+		else
+			return null;
 	}
 }

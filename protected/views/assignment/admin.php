@@ -12,11 +12,6 @@ $this->menu=array(
 
 <h1>Manage Assignments</h1>
 
-<?php $this->widget('zii.widgets.CMenu', array(
-    'items'=>$this->menu,
-    'htmlOptions'=>array('class'=>'submenu'),
-)); ?>
-
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'assignment-grid',
 	'dataProvider'=>$model->search(),

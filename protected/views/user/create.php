@@ -12,9 +12,4 @@ $this->menu=array(
 
 <h1>Create User</h1>
 
-<?php $this->widget('zii.widgets.CMenu', array(
-    'items'=>$this->menu,
-    'htmlOptions'=>array('class'=>'submenu'),
-)); ?>
-
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

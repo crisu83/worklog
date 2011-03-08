@@ -15,11 +15,6 @@ $this->menu=array(
 
 <h1>View Project #<?php echo $model->id; ?></h1>
 
-<?php $this->widget('zii.widgets.CMenu', array(
-    'items'=>$this->menu,
-    'htmlOptions'=>array('class'=>'submenu'),
-)); ?>
-
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
@@ -28,6 +23,7 @@ $this->menu=array(
 			'name'=>'parentId',
 			'value'=>$model->getParentName(),
 		),
+		'key',
 		'name',
 		'created',
 		'updated',

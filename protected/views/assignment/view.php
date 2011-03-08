@@ -15,11 +15,6 @@ $this->menu=array(
 
 <h1>View Assignment #<?php echo $model->id; ?></h1>
 
-<?php $this->widget('zii.widgets.CMenu', array(
-    'items'=>$this->menu,
-    'htmlOptions'=>array('class'=>'submenu'),
-)); ?>
-
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
@@ -53,7 +48,11 @@ $this->menu=array(
 			'value'=>'$data->owner->name',
 		),
 		'comment',
-		'tags',
+		array(
+			'name'=>'tags',
+			'type'=>'raw',
+			'value'=>'$data->getTagsAsString()',
+		),
 		'startDate',
 		'endDate',
 		array(

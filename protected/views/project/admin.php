@@ -12,11 +12,6 @@ $this->menu=array(
 
 <h1>Manage Projects</h1>
 
-<?php $this->widget('zii.widgets.CMenu', array(
-    'items'=>$this->menu,
-    'htmlOptions'=>array('class'=>'submenu'),
-)); ?>
-
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'project-grid',
 	'dataProvider'=>$model->search(),
@@ -30,6 +25,7 @@ $this->menu=array(
 			'name'=>'parentId',
 			'value'=>'$data->getParentName()',
 		),
+		'key',
 		'name',
 		'created',
 		'updated',

@@ -30,7 +30,7 @@ class EntryController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','start','resume'),
+				'actions'=>array('create','update','start','pause','resume','stop'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -152,7 +152,11 @@ class EntryController extends Controller
 			'model'=>$model,
 		));
 	}
-	
+
+	/**
+	 * Starts an entry for the logged in user.
+	 * @throws Exception if saving the entry fails.
+	 */
 	public function actionStart()
 	{
 		$model = new EntryStartForm();
@@ -161,11 +165,13 @@ class EntryController extends Controller
 		{
 			$model->attributes = $_POST['EntryStartForm'];
 			$model->tags = $_POST['EntryStartForm']['tags'];
-			
+
+			// Attempt to find an assignment associated with the entry.
 			$assignment = Assignment::model()->findByAttributes(array(
 				'name'=>$model->name,
 			));
-			
+
+			// New entries needs to create an associated assignment.
 			if( $assignment===null )
 			{
 				$assignment = new Assignment();
@@ -173,31 +179,106 @@ class EntryController extends Controller
 				$assignment->name = $model->name;
 				$assignment->save(false);
 			}
-						
-			$entry=new Entry();
+
+			$entry = new Entry();
 			$entry->ownerId = Yii::app()->user->id;
 			$entry->assignmentId = $assignment->id;
 			$entry->comment = $model->comment;
-			$entry->startDate = empty($entry->startDate)?date('Y-m-d H:i:s'):$entry->startDate;
-			$entry->endDate = empty($entry->endDate)?null:$entry->endDate;
-			
-			if($entry->save())
+			$entry->startDate = empty($entry->startDate) ? date('Y-m-d H:i:s') : $entry->startDate;
+			$entry->endDate = empty($entry->endDate) ? null : $entry->endDate;
+
+			// Attempt to save the entry.
+			if( $entry->save() )
 			{
+				$entry->setState(Entry::STATE_RUNNING); // entry is now running
 				$entry->setTags($model->tags);
+				Yii::app()->user->setEntry($entry); // set the active entry for the web user
 				$this->redirect(Yii::app()->homeUrl);
 			}
+			// Saving the entry failed.
+			else
+				throw new Exception(Yii::t('error', 'Failed to start entry with message "Saving entry failed".'));
 		}
 		
 		$this->render('start', array(
 			'model'=>$model,
 		));
 	}
-	
-	public function actionResume()
+
+	/**
+	 * Pauses the current entry for the logged in user.
+	 * @throws Exception if saving the entry fails.
+	 */
+	public function actionPause()
 	{
-		$this->render('resume');
+		$entry = Yii::app()->user->getEntry();
+		$entry->endDate = date('Y-m-d H:i:s');
+
+		// Attempt to save the entry.
+		if( $entry->save() )
+			$entry->setState(Entry::STATE_PAUSED); // entry is now paused
+		// Saving the entry failed.
+		else
+			throw new Exception(Yii::t('error', 'Failed to pause entry with message "Saving entry failed".'));
+
+		$this->redirect(Yii::app()->homeUrl);
 	}
 
+	/**
+	 * Resumes the paused entry for the logged in user.
+	 * @throws Exception if saving the entry fails.
+	 */
+	public function actionResume()
+	{
+		// Get the paused entry from the web user.
+		$pausedEntry = Yii::app()->user->getEntry();
+
+		// Create a new entry similar to the paused one.
+		$entry = new Entry();
+		$entry->ownerId = Yii::app()->user->id;
+		$entry->assignmentId = $pausedEntry->assignment->id;
+		$entry->comment = $pausedEntry->comment;
+		$entry->startDate = date('Y-m-d H:i:s');
+		$entry->endDate = null;
+
+		// Attempt to save the entry.
+		if( $entry->save() )
+		{
+			$entry->setState(Entry::STATE_RUNNING); // entry is now running
+			$entry->setTags($pausedEntry->getTags(false));
+			Yii::app()->user->setEntry($entry); // set the active entry for the web user
+			$this->redirect(Yii::app()->homeUrl);
+		}
+		// Saving the entry failed.
+		else
+			throw new Exception(Yii::t('error', 'Failed to resume entry with message "Saving entry failed".'));
+	}
+
+	/**
+	 * Stops the current entry for the logged in user.
+	 * @throws Exception if saving the entry fails.
+	 */
+	public function actionStop()
+	{
+		$entry = Yii::app()->user->getEntry();
+
+		// Make sure that the entry is not paused
+		// because then we do not want to update the end date.
+		if( $entry->getState()!==Entry::STATE_PAUSED )
+		{
+			$entry->endDate = date('Y-m-d H:i:s');
+
+			// Attempt to save the entry.
+			if( $entry->save() )
+				Yii::app()->user->flushEntry();
+			// Saving the entry failed.
+			else
+				throw new Exception(Yii::t('error', 'Failed to stop entry with message "Saving entry failed".'));
+		}
+
+		$this->redirect(Yii::app()->homeUrl);
+	}
+	
 	/**
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.

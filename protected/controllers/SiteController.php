@@ -27,9 +27,28 @@ class SiteController extends Controller
 	 */
 	public function actionIndex()
 	{
-		// renders the view file 'protected/views/site/index.php'
-		// using the default layout 'protected/views/layouts/main.php'
-		$this->render('index');
+		if( Yii::app()->user->isGuest )
+			$this->redirect(array('//site/login'));
+
+		$entry = Yii::app()->user->getEntry();
+
+		$entryState = $entry instanceof Entry ? $entry->getState() : null;
+
+		$criteria = new CDbCriteria();
+		$criteria->addCondition('ownerId=:userId');
+		$criteria->addCondition('endDate IS NOT NULL');
+		$criteria->params[':userId'] = Yii::app()->user->id;
+		$criteria->order = 'id DESC';
+
+		$dataProvider = new CActiveDataProvider('Entry', array(
+			'criteria'=>$criteria
+		));
+
+		$this->render('index',array(
+			'entry'=>$entry,
+			'entryState'=>$entryState,
+			'dataProvider'=>$dataProvider,
+		));
 	}
 
 	/**

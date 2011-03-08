@@ -14,6 +14,11 @@
 class Assignment extends CActiveRecord
 {
 	/**
+	 * @property array list of tags associated to this entry.
+	 */
+	public $tags;
+
+	/**
 	 * Returns the static model of the specified AR class.
 	 * @return Assignment the static model class
 	 */

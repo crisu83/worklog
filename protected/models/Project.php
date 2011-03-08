@@ -5,6 +5,7 @@
  *
  * The followings are the available columns in table 'project':
  * @property integer $id
+ * @property string $key
  * @property string $name
  * @property string $created
  * @property string $updated
@@ -37,12 +38,12 @@ class Project extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('name', 'required'),
-			array('name', 'length', 'max'=>255),
+			array('key, name', 'required'),
+			array('key, name', 'length', 'max'=>255),
 			array('parentId', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, name, created, updated', 'safe', 'on'=>'search'),
+			array('id, key, name, created, updated', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -74,6 +75,7 @@ class Project extends CActiveRecord
 	{
 		return array(
 			'id'			=>'Id',
+			'key'           =>'Key',
 			'parentId'		=>'Parent',
 			'name'			=>'Name',
 			'created'		=>'Created',
@@ -93,6 +95,7 @@ class Project extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
+		$criteria->compare('key',$this->key);
 		$criteria->compare('name',$this->name,true);
 		$criteria->compare('created',$this->created,true);
 		$criteria->compare('updated',$this->updated,true);
@@ -105,15 +108,9 @@ class Project extends CActiveRecord
 	public function getParentOptions()
 	{
 		if( $this->isNewRecord )
-			$parents = Project::model()->findAll('deleted=0');
+			return Project::model()->findAll('deleted=0');
 		else
-			$parents = Project::model()->findAll('id!=? AND deleted=0', array($this->id));
-		
-		$options = array(''=>'None');
-		foreach( $parents as $parent )
-			$options[ $parent->id ] = $parent->name;
-		
-		return $options;
+			return Project::model()->findAll('id!=? AND deleted=0', array($this->id));
 	}
 	
 	public function getParentName()
