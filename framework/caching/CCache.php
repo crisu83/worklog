@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2010 Yii Software LLC
+ * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -41,7 +41,7 @@
  * CCache also implements ArrayAccess so that it can be used like an array.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CCache.php 2537 2010-10-12 18:50:13Z keyboard.idol@gmail.com $
+ * @version $Id: CCache.php 3001 2011-02-24 16:42:44Z alexander.makarow $
  * @package system.caching
  * @since 1.0
  */

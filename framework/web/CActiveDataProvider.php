@@ -5,7 +5,7 @@
  * CActiveDataProvider provides data in terms of ActiveRecord objects which are
  * of class {@link modelClass}. It uses the AR {@link CActiveRecord::findAll} method
  * to retrieve the data from database. The {@link criteria} property can be used to
- * specify various query options, such as conditions, sorting, pagination, etc.
+ * specify various query options.
  *
  * CActiveDataProvider may be used in the following way:
  * <pre>
@@ -23,7 +23,7 @@
  * </pre>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveDataProvider.php 2608 2010-11-02 20:43:23Z qiang.xue $
+ * @version $Id: CActiveDataProvider.php 3014 2011-03-02 14:07:19Z mdomba $
  * @package system.web
  * @since 1.1
  */
@@ -35,9 +35,9 @@ class CActiveDataProvider extends CDataProvider
 	 */
 	public $modelClass;
 	/**
-	 * @var CActiveRecord the AR finder instance (e.g. <code>Post::model()</code>).
+	 * @var CActiveRecord the AR finder instance (eg <code>Post::model()</code>).
 	 * This property can be set by passing the finder instance as the first parameter
-	 * to the constructor.
+	 * to the constructor. For example, <code>Post::model()->published()</code>.
 	 * @since 1.1.3
 	 */
 	public $model;

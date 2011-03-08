@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2010 Yii Software LLC
+ * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -79,7 +79,7 @@
  * </pre>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDbConnection.php 2621 2010-11-05 18:53:15Z qiang.xue $
+ * @version $Id: CDbConnection.php 3001 2011-02-24 16:42:44Z alexander.makarow $
  * @package system.db
  * @since 1.0
  */
@@ -117,6 +117,43 @@ class CDbConnection extends CApplicationComponent
 	 * @since 1.0.10
 	 */
 	public $schemaCacheID='cache';
+	/**
+	 * @var integer number of seconds that query results can remain valid in cache.
+	 * Use 0 or negative value to indicate not caching query results (the default behavior).
+	 *
+	 * In order to enable query caching, this property must be a positive
+	 * integer and {@link queryCacheID} must point to a valid cache component ID.
+	 *
+	 * The method {@link cache()} is provided as a convenient way of setting this property
+	 * and {@link queryCachingDependency} on the fly.
+	 *
+	 * @see cache
+	 * @see queryCachingDependency
+	 * @see queryCacheID
+	 * @since 1.1.7
+	 */
+	public $queryCachingDuration=0;
+	/**
+	 * @var CCacheDependency the dependency that will be used when saving query results into cache.
+	 * @see queryCachingDuration
+	 * @since 1.1.7
+	 */
+	public $queryCachingDependency;
+	/**
+	 * @var integer the number of SQL statements that need to be cached next.
+	 * If this is 0, then even if query caching is enabled, no query will be cached.
+	 * Note that each time after executing a SQL statement (whether executed on DB server or fetched from
+	 * query cache), this property will be reduced by 1 until 0.
+	 * @since 1.1.7
+	 */
+	public $queryCachingCount=0;
+	/**
+	 * @var string the ID of the cache application component that is used for query caching.
+	 * Defaults to 'cache' which refers to the primary cache application component.
+	 * Set this property to false if you want to disable query caching.
+	 * @since 1.1.7
+	 */
+	public $queryCacheID='cache';
 	/**
 	 * @var boolean whether the database connection should be automatically established
 	 * the component is being initialized. Defaults to true. Note, this property is only
@@ -164,6 +201,22 @@ class CDbConnection extends CApplicationComponent
 	 * @since 1.1.1
 	 */
 	public $initSQLs;
+	/**
+	 * @var array mapping between PDO driver and schema class name.
+	 * A schema class can be specified using path alias.
+	 * @since 1.1.6
+	 */
+	public $driverMap=array(
+		'pgsql'=>'CPgsqlSchema',    // PostgreSQL
+		'mysqli'=>'CMysqlSchema',   // MySQL
+		'mysql'=>'CMysqlSchema',    // MySQL
+		'sqlite'=>'CSqliteSchema',  // sqlite 3
+		'sqlite2'=>'CSqliteSchema', // sqlite 2
+		'mssql'=>'CMssqlSchema',    // Mssql driver on windows hosts
+		'dblib'=>'CMssqlSchema',    // dblib drivers on linux (and maybe others os) hosts
+		'sqlsrv'=>'CMssqlSchema',   // Mssql
+		'oci'=>'COciSchema',        // Oracle driver
+	);
 
 	private $_attributes=array();
 	private $_active=false;
@@ -199,6 +252,7 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
+	 * Returns a list of available PDO drivers.
 	 * @return array list of available PDO drivers
 	 * @see http://www.php.net/manual/en/function.PDO-getAvailableDrivers.php
 	 */
@@ -222,6 +276,7 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
+	 * Returns whether the DB connection is established.
 	 * @return boolean whether the DB connection is established
 	 */
 	public function getActive()
@@ -243,6 +298,30 @@ class CDbConnection extends CApplicationComponent
 			else
 				$this->close();
 		}
+	}
+
+	/**
+	 * Sets the parameters about query caching.
+	 * This method can be used to enable or disable query caching.
+	 * By setting the $duration parameter to be 0, the query caching will be disabled.
+	 * Otherwise, query results of the new SQL statements executed next will be saved in cache
+	 * and remain valid for the specified duration.
+	 * If the same query is executed again, the result may be fetched from cache directly
+	 * without actually executing the SQL statement.
+	 * @param integer $duration the number of seconds that query results may remain valid in cache.
+	 * If this is 0, the caching will be disabled.
+	 * @param CCacheDependency $dependency the dependency that will be used when saving the query results into cache.
+	 * @param integer $queryCount number of SQL queries that need to be cached after calling this method. Defaults to 1,
+	 * meaning that the next SQL query will be cached.
+	 * @return CDbConnection the connection instance itself.
+	 * @since 1.1.7
+	 */
+	public function cache($duration, $dependency=null, $queryCount=1)
+	{
+		$this->queryCachingDuration=$duration;
+		$this->queryCachingDependency=$dependency;
+		$this->queryCachingCount=$queryCount;
+		return $this;
 	}
 
 	/**
@@ -335,6 +414,7 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
+	 * Returns the PDO instance.
 	 * @return PDO the PDO instance, null if the connection is not established yet
 	 */
 	public function getPdoInstance()
@@ -344,19 +424,23 @@ class CDbConnection extends CApplicationComponent
 
 	/**
 	 * Creates a command for execution.
-	 * @param string $sql SQL statement associated with the new command.
+	 * @param mixed $query the DB query to be executed. This can be either a string representing a SQL statement,
+	 * or an array representing different fragments of a SQL statement. Please refer to {@link CDbCommand::__construct}
+	 * for more details about how to pass an array as the query. If this parameter is not given,
+	 * you will have to call query builder methods of {@link CDbCommand} to build the DB query.
 	 * @return CDbCommand the DB command
 	 * @throws CException if the connection is not active
 	 */
-	public function createCommand($sql)
+	public function createCommand($query=null)
 	{
 		if($this->getActive())
-			return new CDbCommand($this,$sql);
+			return new CDbCommand($this,$query);
 		else
 			throw new CDbException(Yii::t('yii','CDbConnection is inactive and cannot perform any DB operations.'));
 	}
 
 	/**
+	 * Returns the currently active transaction.
 	 * @return CDbTransaction the currently active transaction. Null if no active transaction.
 	 */
 	public function getCurrentTransaction()
@@ -386,6 +470,7 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
+	 * Returns the database schema for the current connection
 	 * @return CDbSchema the database schema for the current connection
 	 * @throws CException if the connection is not active yet
 	 */
@@ -397,28 +482,12 @@ class CDbConnection extends CApplicationComponent
 		{
 			if(!$this->getActive())
 				throw new CDbException(Yii::t('yii','CDbConnection is inactive and cannot perform any DB operations.'));
-			$driver=$this->getDriverName();
-			switch(strtolower($driver))
-			{
-				case 'pgsql':  // PostgreSQL
-					return $this->_schema=new CPgsqlSchema($this);
-				case 'mysqli': // MySQL
-				case 'mysql':
-					return $this->_schema=new CMysqlSchema($this);
-				case 'sqlite': // sqlite 3
-				case 'sqlite2': // sqlite 2
-					return $this->_schema=new CSqliteSchema($this);
-				case 'mssql': // Mssql driver on windows hosts
-				case 'dblib': // dblib drivers on linux (and maybe others os) hosts
-				case 'sqlsrv':
-					return $this->_schema=new CMssqlSchema($this);
-				case 'oci':  // Oracle driver
-					return $this->_schema=new COciSchema($this);
-				case 'ibm':
-				default:
-					throw new CDbException(Yii::t('yii','CDbConnection does not support reading schema for {driver} database.',
-						array('{driver}'=>$driver)));
-			}
+			$driver=strtolower($this->getDriverName());
+			if(isset($this->driverMap[$driver]))
+				return $this->_schema=Yii::createComponent($this->driverMap[$driver], $this);
+			else
+				throw new CDbException(Yii::t('yii','CDbConnection does not support reading schema for {driver} database.',
+					array('{driver}'=>$driver)));
 		}
 	}
 
@@ -454,14 +523,23 @@ class CDbConnection extends CApplicationComponent
 	 */
 	public function quoteValue($str)
 	{
+		if(is_int($str) || is_float($str))
+			return $str;
+
 		if($this->getActive())
-			return $this->_pdo->quote($str);
+		{
+			if(($value=$this->_pdo->quote($str))!==false)
+				return $value;
+			else  // the driver doesn't support quote (e.g. oci)
+				return "'" . addcslashes(str_replace("'", "''", $str), "\000\n\r\\\032") . "'";
+		}
 		else
 			throw new CDbException(Yii::t('yii','CDbConnection is inactive and cannot perform any DB operations.'));
 	}
 
 	/**
 	 * Quotes a table name for use in a query.
+	 * If the table name contains schema prefix, the prefix will also be properly quoted.
 	 * @param string $name table name
 	 * @return string the properly quoted table name
 	 */
@@ -472,6 +550,7 @@ class CDbConnection extends CApplicationComponent
 
 	/**
 	 * Quotes a column name for use in a query.
+	 * If the column name contains prefix, the prefix will also be properly quoted.
 	 * @param string $name column name
 	 * @return string the properly quoted column name
 	 */
@@ -498,6 +577,7 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
+	 * Returns the case of the column names
 	 * @return mixed the case of the column names
 	 * @see http://www.php.net/manual/en/pdo.setattribute.php
 	 */
@@ -507,6 +587,7 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
+	 * Sets the case of the column names.
 	 * @param mixed $value the case of the column names
 	 * @see http://www.php.net/manual/en/pdo.setattribute.php
 	 */
@@ -516,6 +597,7 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
+	 * Returns how the null and empty strings are converted.
 	 * @return mixed how the null and empty strings are converted
 	 * @see http://www.php.net/manual/en/pdo.setattribute.php
 	 */
@@ -525,6 +607,7 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
+	 * Sets how the null and empty strings are converted.
 	 * @param mixed $value how the null and empty strings are converted
 	 * @see http://www.php.net/manual/en/pdo.setattribute.php
 	 */
@@ -534,8 +617,9 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
-	 * @return boolean whether creating or updating a DB record will be automatically committed.
+	 * Returns whether creating or updating a DB record will be automatically committed.
 	 * Some DBMS (such as sqlite) may not support this feature.
+	 * @return boolean whether creating or updating a DB record will be automatically committed.
 	 */
 	public function getAutoCommit()
 	{
@@ -543,8 +627,9 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
-	 * @param boolean $value whether creating or updating a DB record will be automatically committed.
+	 * Sets whether creating or updating a DB record will be automatically committed.
 	 * Some DBMS (such as sqlite) may not support this feature.
+	 * @param boolean $value whether creating or updating a DB record will be automatically committed.
 	 */
 	public function setAutoCommit($value)
 	{
@@ -552,8 +637,9 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
-	 * @return boolean whether the connection is persistent or not
+	 * Returns whether the connection is persistent or not.
 	 * Some DBMS (such as sqlite) may not support this feature.
+	 * @return boolean whether the connection is persistent or not
 	 */
 	public function getPersistent()
 	{
@@ -561,8 +647,9 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
-	 * @param boolean $value whether the connection is persistent or not
+	 * Sets whether the connection is persistent or not.
 	 * Some DBMS (such as sqlite) may not support this feature.
+	 * @param boolean $value whether the connection is persistent or not
 	 */
 	public function setPersistent($value)
 	{
@@ -570,6 +657,7 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
+	 * Returns the name of the DB driver
 	 * @return string name of the DB driver
 	 */
 	public function getDriverName()
@@ -578,6 +666,7 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
+	 * Returns the version information of the DB driver.
 	 * @return string the version information of the DB driver
 	 */
 	public function getClientVersion()
@@ -586,8 +675,9 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
-	 * @return string the status of the connection
+	 * Returns the status of the connection.
 	 * Some DBMS (such as sqlite) may not support this feature.
+	 * @return string the status of the connection
 	 */
 	public function getConnectionStatus()
 	{
@@ -595,6 +685,7 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
+	 * Returns whether the connection performs data prefetching.
 	 * @return boolean whether the connection performs data prefetching
 	 */
 	public function getPrefetch()
@@ -603,6 +694,7 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
+	 * Returns the information of DBMS server.
 	 * @return string the information of DBMS server
 	 */
 	public function getServerInfo()
@@ -611,6 +703,7 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
+	 * Returns the version information of DBMS server.
 	 * @return string the version information of DBMS server
 	 */
 	public function getServerVersion()
@@ -619,7 +712,8 @@ class CDbConnection extends CApplicationComponent
 	}
 
 	/**
-	 * @return int timeout settings for the connection
+	 * Returns the timeout settings for the connection.
+	 * @return integer timeout settings for the connection
 	 */
 	public function getTimeout()
 	{
@@ -628,7 +722,7 @@ class CDbConnection extends CApplicationComponent
 
 	/**
 	 * Obtains a specific DB connection attribute information.
-	 * @param int $name the attribute to be queried
+	 * @param integer $name the attribute to be queried
 	 * @return mixed the corresponding attribute information
 	 * @see http://www.php.net/manual/en/function.PDO-getAttribute.php
 	 */
@@ -642,7 +736,7 @@ class CDbConnection extends CApplicationComponent
 
 	/**
 	 * Sets an attribute on the database connection.
-	 * @param int $name the attribute to be set
+	 * @param integer $name the attribute to be set
 	 * @param mixed $value the attribute value
 	 * @see http://www.php.net/manual/en/function.PDO-setAttribute.php
 	 */

@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2010 Yii Software LLC
+ * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -20,7 +20,7 @@
  * specifies how many files to be kept.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CFileLogRoute.php 2574 2010-10-26 19:25:43Z qiang.xue $
+ * @version $Id: CFileLogRoute.php 3001 2011-02-24 16:42:44Z alexander.makarow $
  * @package system.logging
  * @since 1.0
  */
@@ -134,8 +134,12 @@ class CFileLogRoute extends CLogRoute
 		$logFile=$this->getLogPath().DIRECTORY_SEPARATOR.$this->getLogFile();
 		if(@filesize($logFile)>$this->getMaxFileSize()*1024)
 			$this->rotateFiles();
+		$fp=@fopen($logFile,'a');
+		@flock($fp,LOCK_EX);
 		foreach($logs as $log)
-			error_log($this->formatLogMessage($log[0],$log[1],$log[2],$log[3]),3,$logFile);
+			@fwrite($fp,$this->formatLogMessage($log[0],$log[1],$log[2],$log[3]));
+		@flock($fp,LOCK_UN);
+		@fclose($fp);
 	}
 
 	/**

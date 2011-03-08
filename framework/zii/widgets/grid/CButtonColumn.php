@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2010 Yii Software LLC
+ * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -20,7 +20,7 @@ Yii::import('zii.widgets.grid.CGridColumn');
  * and customize the display order of the buttons.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CButtonColumn.php 2626 2010-11-07 04:02:50Z qiang.xue $
+ * @version $Id: CButtonColumn.php 2990 2011-02-22 11:44:50Z mdomba $
  * @package zii.widgets.grid
  * @since 1.1
  */
@@ -116,6 +116,26 @@ class CButtonColumn extends CGridColumn
 	 */
 	public $deleteConfirmation;
 	/**
+	 * @var string a javascript function that will be invoked after the delete ajax call.
+	 *
+	 * The function signature is <code>function(link, success, data)</code>
+	 * <ul>
+	 * <li><code>link</code> references the delete link.</li>
+	 * <li><code>success</code> status of the ajax call, true if the ajax call was successful, false if the ajax call failed.
+	 * <li><code>data</code> the data returned by the server (in case of a successful call).
+	 * </ul>
+	 * Note that if success is true it does not mean that the delete was successful, it only means that the ajax call was successful.
+	 *
+	 * Example:
+	 * <pre>
+	 *  array(
+	 *     class'=>'CButtonColumn',
+	 *     'afterDelete'=>'function(link,success,data){ if(success) alert("Delete completed successfuly"); }',
+	 *  ),
+	 * </pre>
+	 */
+	public $afterDelete;
+	/**
 	 * @var array the configuration for additional buttons. Each array element specifies a single button
 	 * which has the following format:
 	 * <pre>
@@ -209,14 +229,23 @@ class CButtonColumn extends CGridColumn
 		else
 			$csrf = '';
 
+		if($this->afterDelete===null)
+			$this->afterDelete='function(){}';
+
 		$this->buttons['delete']['click']=<<<EOD
 function() {
 	$confirmation
+	var th=this;
+	var afterDelete=$this->afterDelete;
 	$.fn.yiiGridView.update('{$this->grid->id}', {
 		type:'POST',
 		url:$(this).attr('href'),$csrf
-		success:function() {
+		success:function(data) {
 			$.fn.yiiGridView.update('{$this->grid->id}');
+			afterDelete(th,true,data);
+		},
+		error:function() {
+			afterDelete(th,false);
 		}
 	});
 	return false;

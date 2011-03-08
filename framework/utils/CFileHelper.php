@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2010 Yii Software LLC
+ * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -12,7 +12,7 @@
  * CFileHelper provides a set of helper methods for common file system operations.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CFileHelper.php 2497 2010-09-23 13:28:52Z mdomba $
+ * @version $Id: CFileHelper.php 3013 2011-03-01 10:56:02Z mdomba $
  * @package system.utils
  * @since 1.0
  */
@@ -27,10 +27,7 @@ class CFileHelper
 	 */
 	public static function getExtension($path)
 	{
-		if(($pos=strrpos($path,'.'))!==false)
-			return substr($path,$pos+1);
-		else
-			return '';
+		return pathinfo($path, PATHINFO_EXTENSION);
 	}
 
 	/**
@@ -189,11 +186,8 @@ class CFileHelper
 		}
 		if(!$isFile || empty($fileTypes))
 			return true;
-		if(($pos=strrpos($file,'.'))!==false)
-		{
-			$type=substr($file,$pos+1);
+		if(($type=pathinfo($file, PATHINFO_EXTENSION))!=='')
 			return in_array($type,$fileTypes);
-		}
 		else
 			return false;
 	}
@@ -218,7 +212,9 @@ class CFileHelper
 	{
 		if(function_exists('finfo_open'))
 		{
-			$info=$magicFile===null ? finfo_open(FILEINFO_MIME_TYPE) : finfo_open(FILEINFO_MIME_TYPE,$magicFile);
+			$options=defined('FILEINFO_MIME_TYPE') ? FILEINFO_MIME_TYPE : FILEINFO_MIME;
+			$info=$magicFile===null ? finfo_open($options) : finfo_open($options,$magicFile);
+
 			if($info && ($result=finfo_file($info,$file))!==false)
 				return $result;
 		}
@@ -243,9 +239,9 @@ class CFileHelper
 		static $extensions;
 		if($extensions===null)
 			$extensions=$magicFile===null ? require(Yii::getPathOfAlias('system.utils.mimeTypes').'.php') : $magicFile;
-		if(($pos=strrpos($file,'.'))!==false)
+		if(($ext=pathinfo($path, PATHINFO_EXTENSION))!=='')
 		{
-			$ext=strtolower(substr($file,$pos+1));
+			$ext=strtolower($ext);
 			if(isset($extensions[$ext]))
 				return $extensions[$ext];
 		}

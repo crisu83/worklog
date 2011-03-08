@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2010 Yii Software LLC
+ * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -13,7 +13,7 @@
  * CHtml is a static class that provides a collection of helper methods for creating HTML views.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CHtml.php 2618 2010-11-04 04:33:25Z qiang.xue $
+ * @version $Id: CHtml.php 2985 2011-02-20 16:10:57Z alexander.makarow $
  * @package system.web.helpers
  * @since 1.0
  */
@@ -398,7 +398,10 @@ class CHtml
 	public static function button($label='button',$htmlOptions=array())
 	{
 		if(!isset($htmlOptions['name']))
-			$htmlOptions['name']=self::ID_PREFIX.self::$count++;
+		{
+			if(!array_key_exists('name',$htmlOptions))
+				$htmlOptions['name']=self::ID_PREFIX.self::$count++;
+		}
 		if(!isset($htmlOptions['type']))
 			$htmlOptions['type']='button';
 		if(!isset($htmlOptions['value']))
@@ -459,7 +462,7 @@ class CHtml
 
 	/**
 	 * Generates an image submit button.
-	 * @param string $src the button label
+	 * @param string $src the image URL
 	 * @param array $htmlOptions additional HTML attributes. Besides normal HTML attributes, a few special
 	 * attributes are also recognized (see {@link clientChange} and {@link tag} for more details.)
 	 * @return string the generated button tag
@@ -1464,6 +1467,10 @@ EOD;
 	 * <li>encode: boolean, specifies whether to encode HTML-encode tag attributes and values. Defaults to true.
 	 * This option has been available since version 1.0.5.</li>
 	 * </ul>
+	 * Since 1.1.7, a special option named 'uncheckValue' is available. It can be used to set the value
+	 * that will be returned when the checkbox is not checked. By default, this value is ''.
+	 * Internally, a hidden field is rendered so when the checkbox is not checked, we can still
+	 * obtain the value. If 'uncheckValue' is set to NULL, there will be no hidden field rendered.
 	 * @return string the generated check box list
 	 * @see checkBoxList
 	 */
@@ -1476,9 +1483,18 @@ EOD;
 		$name=$htmlOptions['name'];
 		unset($htmlOptions['name']);
 
+		if(array_key_exists('uncheckValue',$htmlOptions))
+		{
+			$uncheck=$htmlOptions['uncheckValue'];
+			unset($htmlOptions['uncheckValue']);
+		}
+		else
+			$uncheck='';
+
 		$hiddenOptions=isset($htmlOptions['id']) ? array('id'=>self::ID_PREFIX.$htmlOptions['id']) : array('id'=>false);
-		return self::hiddenField($name,'',$hiddenOptions)
-			. self::checkBoxList($name,$selection,$data,$htmlOptions);
+		$hidden=$uncheck!==null ? self::hiddenField($name,$uncheck,$hiddenOptions) : '';
+
+		return $hidden . self::checkBoxList($name,$selection,$data,$htmlOptions);
 	}
 
 	/**
@@ -1500,6 +1516,10 @@ EOD;
 	 * <li>encode: boolean, specifies whether to encode HTML-encode tag attributes and values. Defaults to true.
 	 * This option has been available since version 1.0.5.</li>
 	 * </ul>
+	 * Since version 1.1.7, a special option named 'uncheckValue' is available that can be used to specify the value
+	 * returned when the radio button is not checked. By default, this value is ''. Internally, a hidden field is
+	 * rendered so that when the radio button is not checked, we can still obtain the posted uncheck value.
+	 * If 'uncheckValue' is set as NULL, the hidden field will not be rendered.
 	 * @return string the generated radio button list
 	 * @see radioButtonList
 	 */
@@ -1512,9 +1532,18 @@ EOD;
 		$name=$htmlOptions['name'];
 		unset($htmlOptions['name']);
 
+		if(array_key_exists('uncheckValue',$htmlOptions))
+		{
+			$uncheck=$htmlOptions['uncheckValue'];
+			unset($htmlOptions['uncheckValue']);
+		}
+		else
+			$uncheck='';
+
 		$hiddenOptions=isset($htmlOptions['id']) ? array('id'=>self::ID_PREFIX.$htmlOptions['id']) : array('id'=>false);
-		return self::hiddenField($name,'',$hiddenOptions)
-			. self::radioButtonList($name,$selection,$data,$htmlOptions);
+		$hidden=$uncheck!==null ? self::hiddenField($name,$uncheck,$hiddenOptions) : '';
+
+		return $hidden . self::radioButtonList($name,$selection,$data,$htmlOptions);
 	}
 
 	/**
@@ -1861,14 +1890,22 @@ EOD;
 	 * javascript would not cause the default behavior of the event. This option has been available since version 1.0.2.</li>
 	 * <li>confirm: string, specifies the message that should show in a pop-up confirmation dialog.</li>
 	 * <li>ajax: array, specifies the AJAX options (see {@link ajax}).</li>
+	 * <li>live: boolean, whether the event handler should be bound in "live" (a jquery event concept). Defaults to true. This option has been available since version 1.1.6.</li>
 	 * </ul>
-	 * @param boolean $live whether the event should be "live" (a jquery event concept). Defaults to true.
 	 * This parameter has been available since version 1.1.1.
 	 */
-	protected static function clientChange($event,&$htmlOptions,$live=true)
+	protected static function clientChange($event,&$htmlOptions)
 	{
 		if(!isset($htmlOptions['submit']) && !isset($htmlOptions['confirm']) && !isset($htmlOptions['ajax']))
 			return;
+
+		if(isset($htmlOptions['live']))
+		{
+			$live=$htmlOptions['live'];
+			unset($htmlOptions['live']);
+		}
+		else
+			$live=true;
 
 		if(isset($htmlOptions['return']) && $htmlOptions['return'])
 			$return='return true';
@@ -1921,7 +1958,7 @@ EOD;
 		}
 
 		if($live)
-			$cs->registerScript('Yii.CHtml.#'.$id,"jQuery('body').delegate('#$id','$event',function(){{$handler}});");
+			$cs->registerScript('Yii.CHtml.#'.$id,"jQuery('body').undelegate('#$id','$event').delegate('#$id','$event',function(){{$handler}});");
 		else
 			$cs->registerScript('Yii.CHtml.#'.$id,"jQuery('#$id').$event(function(){{$handler}});");
 		unset($htmlOptions['params'],$htmlOptions['submit'],$htmlOptions['ajax'],$htmlOptions['confirm'],$htmlOptions['return'],$htmlOptions['csrf']);
@@ -1991,6 +2028,13 @@ EOD;
 	{
 		if(($pos=strpos($attribute,'['))!==false)
 		{
+			if($pos===0)  // [a]name[b][c], should ignore [a]
+			{
+				if(preg_match('/\](\w+)/',$attribute,$matches))
+					$attribute=$matches[1];
+				if(($pos=strpos($attribute,'['))===false)
+					return $model->$attribute;
+			}
 			$name=substr($attribute,0,$pos);
 			$value=$model->$name;
 			foreach(explode('][',rtrim(substr($attribute,$pos+1),']')) as $id)

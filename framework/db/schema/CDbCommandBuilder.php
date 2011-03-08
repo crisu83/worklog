@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2010 Yii Software LLC
+ * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -12,7 +12,7 @@
  * CDbCommandBuilder provides basic methods to create query commands for tables.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDbCommandBuilder.php 2601 2010-11-02 15:08:56Z qiang.xue $
+ * @version $Id: CDbCommandBuilder.php 3001 2011-02-24 16:42:44Z alexander.makarow $
  * @package system.db.schema
  * @since 1.0
  */
@@ -113,7 +113,7 @@ class CDbCommandBuilder extends CComponent
 			$alias=$criteria->alias;
 		$alias=$this->_schema->quoteTableName($alias);
 
-		if(!empty($this->group) || !empty($this->having))
+		if(!empty($criteria->group) || !empty($criteria->having))
 		{
 			$select=is_array($criteria->select) ? implode(', ',$criteria->select) : $criteria->select;
 			if($criteria->alias!='')

@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2010 Yii Software LLC
+ * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -15,7 +15,7 @@
  * {@link CActiveRecord}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveFinder.php 2635 2010-11-10 20:36:46Z qiang.xue $
+ * @version $Id: CActiveFinder.php 3019 2011-03-04 13:15:17Z alexander.makarow $
  * @package system.db.ar
  * @since 1.0
  */
@@ -200,13 +200,14 @@ class CActiveFinder extends CComponent
 			}
 
 			// named scope
+			$scopes=array();
 			if(($pos=strpos($with,':'))!==false)
 			{
 				$scopes=explode(':',substr($with,$pos+1));
 				$with=substr($with,0,$pos);
 			}
 
-			if(isset($parent->children[$with]))
+			if(isset($parent->children[$with]) && $parent->children[$with]->master===null)
 				return $parent->children[$with];
 
 			if(($relation=$parent->model->getActiveRelation($with))===null)
@@ -220,15 +221,47 @@ class CActiveFinder extends CComponent
 				$oldAlias=$model->getTableAlias(false,false);
 				$model->setTableAlias($relation->alias===null?$relation->name:$relation->alias);
 			}
+
 			if(($scope=$model->defaultScope())!==array())
 				$relation->mergeWith($scope,true);
-			if(!empty($scopes))
+
+			if(!empty($options['scopes']))
+				$scopes=array_merge($scopes,(array)$options['scopes']); // no need complex merging, $scopes always in simle format
+
+			if($scopes!==array())
 			{
 				$scs=$model->scopes();
-				foreach($scopes as $scope)
+				foreach($scopes as $k=>$v)
 				{
-					if(isset($scs[$scope]))
-						$relation->mergeWith($scs[$scope],true);
+					if(is_integer($k))
+					{
+						if(is_string($v))
+						{
+							if(isset($scs[$v]))
+							{
+								$relation->mergeWith($scs[$v],true);
+								continue;
+							}
+							$scope=$v;
+							$params=array();
+						}
+						else if(is_array($v))
+						{
+							$scope=key($v);
+							$params=current($v);
+						}
+					}
+					else if(is_string($k))
+					{
+						$scope=$k;
+						$params=$v;
+					}
+					if(method_exists($model,$scope))
+					{
+						$model->resetScope();
+						call_user_func_array(array($model,$scope),(array)$params);
+						$relation->mergeWith($model->getDbCriteria(),true);
+					}
 					else
 						throw new CDbException(Yii::t('yii','Active record class "{class}" does not have a scope named "{scope}".',
 							array('{class}'=>get_class($model), '{scope}'=>$scope)));
@@ -246,7 +279,20 @@ class CActiveFinder extends CComponent
 				return new CStatElement($this,$relation,$parent);
 			else
 			{
-				$element=$parent->children[$with]=new CJoinElement($this,$relation,$parent,++$this->_joinCount);
+				if(isset($parent->children[$with]))
+				{
+					$element=$parent->children[$with];
+					$element->relation=$relation;
+				}
+				else
+					$element=new CJoinElement($this,$relation,$parent,++$this->_joinCount);
+				if(!empty($relation->through))
+				{
+					$slave=$this->buildJoinTree($parent,$relation->through,array('select'=>false));
+					$slave->master=$element;
+					$element->slave=$slave;
+				}
+				$parent->children[$with]=$element;
 				if(!empty($relation->with))
 					$this->buildJoinTree($element,$relation->with);
 				return $element;
@@ -259,7 +305,7 @@ class CActiveFinder extends CComponent
 			if(is_string($value))  // the value is a relation name
 				$this->buildJoinTree($parent,$value);
 			else if(is_string($key) && is_array($value))
-				$element=$this->buildJoinTree($parent,$key,$value);
+				$this->buildJoinTree($parent,$key,$value);
 		}
 	}
 }
@@ -269,7 +315,7 @@ class CActiveFinder extends CComponent
  * CJoinElement represents a tree node in the join tree created by {@link CActiveFinder}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveFinder.php 2635 2010-11-10 20:36:46Z qiang.xue $
+ * @version $Id: CActiveFinder.php 3019 2011-03-04 13:15:17Z alexander.makarow $
  * @package system.db.ar
  * @since 1.0
  */
@@ -283,6 +329,14 @@ class CJoinElement
 	 * @var CActiveRelation the relation represented by this tree node
 	 */
 	public $relation;
+	/**
+	 * @var CActiveRelation the master relation
+	 */
+	public $master;
+	/**
+	 * @var CActiveRelation the slave relation
+	 */
+	public $slave;
 	/**
 	 * @var CActiveRecord the model associated with this tree node
 	 */
@@ -377,7 +431,7 @@ class CJoinElement
 			foreach($this->children as $child)
 				$child->destroy();
 		}
-		unset($this->_finder, $this->_parent, $this->model, $this->relation, $this->records, $this->children, $this->stats);
+		unset($this->_finder, $this->_parent, $this->model, $this->relation, $this->master, $this->slave, $this->records, $this->children, $this->stats);
 	}
 
 	/**
@@ -393,6 +447,13 @@ class CJoinElement
 			$this->buildQuery($query);
 			$this->_finder->baseLimited=false;
 			$this->runQuery($query);
+			// relational query with two or more HAS_MANY
+			if(!empty($this->records))
+			{
+				$query=new CJoinQuery($this);
+				$this->buildQuery($query);
+				$this->runQuery($query);
+			}
 		}
 		else if(!$this->_joined && !empty($this->_parent->records)) // not joined before
 		{
@@ -429,10 +490,19 @@ class CJoinElement
 		foreach($this->stats as $stat)
 			$stat->query();
 
-		if(empty($this->children))
-			return;
+		switch(count($this->children))
+		{
+			case 0:
+				return;
+			break;
+			case 1:
+				$child=reset($this->children);
+			break;
+			default: // bridge(s) inside
+				$child=end($this->children);
+			break;
+		}
 
-		$child=reset($this->children);
 		$query=new CJoinQuery($child);
 		$query->selects=array();
 		$query->selects[]=$child->getColumnSelect($child->relation->select);
@@ -499,7 +569,7 @@ class CJoinElement
 			if(($joinTable=$schema->getTable($matches[1]))===null)
 				throw new CDbException(Yii::t('yii','The relation "{relation}" in active record class "{class}" is not specified correctly: the join table "{joinTable}" given in the foreign key cannot be found in the database.',
 					array('{class}'=>get_class($parent->model), '{relation}'=>$this->relation->name, '{joinTable}'=>$matches[1])));
-			$fks=preg_split('/[\s,]+/',$matches[2],-1,PREG_SPLIT_NO_EMPTY);
+			$fks=preg_split('/\s*,\s*/',$matches[2],-1,PREG_SPLIT_NO_EMPTY);
 
 
 			$joinAlias=$schema->quoteTableName($this->relation->name.'_'.$this->tableAlias);
@@ -575,7 +645,25 @@ class CJoinElement
 		}
 		else
 		{
-			$fks=preg_split('/[\s,]+/',$this->relation->foreignKey,-1,PREG_SPLIT_NO_EMPTY);
+			$element=$this;
+			while($element->slave!==null)
+			{
+				$fks=preg_split('/\s*,\s*/',$element->relation->foreignKey,-1,PREG_SPLIT_NO_EMPTY);
+				if($element->slave->slave===null)
+				{
+					$fke=$element->slave;
+					$pke=$element;
+				}
+				else // nested through detected
+				{
+					$fke=$element;
+					$pke=$element->slave;
+				}
+				$query->joins[]=$element->slave->joinOneMany($fke,$fks,$pke,$parent);
+				$element=$element->slave;
+			}
+			$fks=preg_split('/\s*,\s*/',$element->relation->foreignKey,-1,PREG_SPLIT_NO_EMPTY);
+			$prefix=$element->getColumnPrefix();
 			$params=array();
 			foreach($fks as $i=>$fk)
 			{
@@ -600,7 +688,6 @@ class CJoinElement
 					$params[$fk]=$record->$pk;
 				}
 			}
-			$prefix=$this->getColumnPrefix();
 			$count=0;
 			foreach($params as $name=>$value)
 			{
@@ -649,7 +736,7 @@ class CJoinElement
 	/**
 	 * Count the number of primary records returned by the join statement.
 	 * @param CDbCriteria $criteria the query criteria
-	 * @return integer number of primary records.
+	 * @return string number of primary records. Note: type is string to keep max. precision.
 	 * @since 1.0.3
 	 */
 	public function count($criteria=null)
@@ -779,14 +866,17 @@ class CJoinElement
 			}
 			$record=$this->model->populateRecord($attributes,false);
 			foreach($this->children as $child)
-				$record->addRelatedRecord($child->relation->name,null,$child->relation instanceof CHasManyRelation);
+			{
+				if(!empty($child->relation->select))
+					$record->addRelatedRecord($child->relation->name,null,$child->relation instanceof CHasManyRelation);
+			}
 			$this->records[$pk]=$record;
 		}
 
 		// populate child records recursively
 		foreach($this->children as $child)
 		{
-			if(!isset($query->elements[$child->id]))
+			if(!isset($query->elements[$child->id]) || empty($child->relation->select))
 				continue;
 			$childRecord=$child->populateRecord($query,$row);
 			if($child->relation instanceof CHasOneRelation || $child->relation instanceof CBelongsToRelation)
@@ -946,7 +1036,6 @@ class CJoinElement
 	public function getJoinCondition()
 	{
 		$parent=$this->_parent;
-		$relation=$this->relation;
 		if($this->relation instanceof CManyManyRelation)
 		{
 			if(!preg_match('/^\s*(.*?)\((.*)\)\s*$/',$this->relation->foreignKey,$matches))
@@ -957,21 +1046,31 @@ class CJoinElement
 			if(($joinTable=$schema->getTable($matches[1]))===null)
 				throw new CDbException(Yii::t('yii','The relation "{relation}" in active record class "{class}" is not specified correctly: the join table "{joinTable}" given in the foreign key cannot be found in the database.',
 					array('{class}'=>get_class($parent->model), '{relation}'=>$this->relation->name, '{joinTable}'=>$matches[1])));
-			$fks=preg_split('/[\s,]+/',$matches[2],-1,PREG_SPLIT_NO_EMPTY);
+			$fks=preg_split('/\s*,\s*/',$matches[2],-1,PREG_SPLIT_NO_EMPTY);
 
 			return $this->joinManyMany($joinTable,$fks,$parent);
 		}
 		else
 		{
-			$fks=preg_split('/[\s,]+/',$relation->foreignKey,-1,PREG_SPLIT_NO_EMPTY);
+			$fks=preg_split('/\s*,\s*/',$this->relation->foreignKey,-1,PREG_SPLIT_NO_EMPTY);
 			if($this->relation instanceof CBelongsToRelation)
 			{
 				$pke=$this;
 				$fke=$parent;
 			}
-			else
+			else if($this->slave===null)
 			{
 				$pke=$parent;
+				$fke=$this;
+			}
+			else if($this->slave->slave===null)
+			{
+				$pke=$this;
+				$fke=$this->slave;
+			}
+			else // nested through detected
+			{
+				$pke=$this->slave;
 				$fke=$this;
 			}
 			return $this->joinOneMany($fke,$fks,$pke,$parent);
@@ -1097,7 +1196,7 @@ class CJoinElement
  * CJoinQuery represents a JOIN SQL statement.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveFinder.php 2635 2010-11-10 20:36:46Z qiang.xue $
+ * @version $Id: CActiveFinder.php 3019 2011-03-04 13:15:17Z alexander.makarow $
  * @package system.db.ar
  * @since 1.0
  */
@@ -1186,7 +1285,8 @@ class CJoinQuery
 	 */
 	public function join($element)
 	{
-		$this->selects[]=$element->getColumnSelect($element->relation->select);
+		if(!empty($element->relation->select))
+			$this->selects[]=$element->getColumnSelect($element->relation->select);
 		$this->conditions[]=$element->relation->condition;
 		$this->orders[]=$element->relation->order;
 		$this->joins[]=$element->getJoinCondition();
@@ -1254,7 +1354,7 @@ class CJoinQuery
  * CStatElement represents STAT join element for {@link CActiveFinder}.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CActiveFinder.php 2635 2010-11-10 20:36:46Z qiang.xue $
+ * @version $Id: CActiveFinder.php 3019 2011-03-04 13:15:17Z alexander.makarow $
  * @package system.db.ar
  * @since 1.0.4
  */
@@ -1303,7 +1403,7 @@ class CStatElement
 		$parent=$this->_parent;
 		$pkTable=$parent->model->getTableSchema();
 
-		$fks=preg_split('/[\s,]+/',$relation->foreignKey,-1,PREG_SPLIT_NO_EMPTY);
+		$fks=preg_split('/\s*,\s*/',$relation->foreignKey,-1,PREG_SPLIT_NO_EMPTY);
 		if(count($fks)!==count($pkTable->primaryKey))
 			throw new CDbException(Yii::t('yii','The relation "{relation}" in active record class "{class}" is specified with an invalid foreign key. The columns in the key must match the primary keys of the table "{table}".',
 						array('{class}'=>get_class($parent->model), '{relation}'=>$relation->name, '{table}'=>$pkTable->name)));
@@ -1418,7 +1518,7 @@ class CStatElement
 			throw new CDbException(Yii::t('yii','The relation "{relation}" in active record class "{class}" is not specified correctly. The join table "{joinTable}" given in the foreign key cannot be found in the database.',
 				array('{class}'=>get_class($this->_parent->model), '{relation}'=>$relation->name, '{joinTable}'=>$joinTableName)));
 
-		$fks=preg_split('/[\s,]+/',$keys,-1,PREG_SPLIT_NO_EMPTY);
+		$fks=preg_split('/\s*,\s*/',$keys,-1,PREG_SPLIT_NO_EMPTY);
 		if(count($fks)!==count($table->primaryKey)+count($pkTable->primaryKey))
 			throw new CDbException(Yii::t('yii','The relation "{relation}" in active record class "{class}" is specified with an incomplete foreign key. The foreign key must consist of columns referencing both joining tables.',
 				array('{class}'=>get_class($this->_parent->model), '{relation}'=>$relation->name)));

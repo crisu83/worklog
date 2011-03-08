@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2010 Yii Software LLC
+ * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -45,7 +45,7 @@
  * you should store them directly in session on the server side if needed.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CWebUser.php 2497 2010-09-23 13:28:52Z mdomba $
+ * @version $Id: CWebUser.php 3017 2011-03-02 21:43:37Z qiang.xue $
  * @package system.web.auth
  * @since 1.0
  */
@@ -89,6 +89,14 @@ class CWebUser extends CApplicationComponent implements IWebUser
 	 * @since 1.1.0
 	 */
 	public $autoRenewCookie=false;
+	/**
+	 * @var boolean whether to automatically update the validity of flash messages.
+	 * Defaults to true, meaning flash messages will be valid only in the current and the next requests.
+	 * If this is set false, you will be responsible for ensuring a flash message is deleted after usage.
+	 * (This can be achieved by calling {@link getFlash} with the 3rd parameter being true).
+	 * @since 1.1.7
+	 */
+	public $autoUpdateFlash=true;
 
 	private $_keyPrefix;
 	private $_access=array();
@@ -165,7 +173,8 @@ class CWebUser extends CApplicationComponent implements IWebUser
 			$this->restoreFromCookie();
 		else if($this->autoRenewCookie && $this->allowAutoLogin)
 			$this->renewCookie();
-		$this->updateFlash();
+		if($this->autoUpdateFlash)
+			$this->updateFlash();
 	}
 
 	/**
@@ -288,12 +297,14 @@ class CWebUser extends CApplicationComponent implements IWebUser
 	 * Returns the URL that the user should be redirected to after successful login.
 	 * This property is usually used by the login action. If the login is successful,
 	 * the action should read this property and use it to redirect the user browser.
-	 * @return string the URL that the user should be redirected to after login. Defaults to the application entry URL.
+	 * @param string $defaultUrl the default return URL in case it was not set previously. If this is null,
+	 * the application entry URL will be considered as the default return URL.
+	 * @return string the URL that the user should be redirected to after login.
 	 * @see loginRequired
 	 */
-	public function getReturnUrl()
+	public function getReturnUrl($defaultUrl=null)
 	{
-		return $this->getState('__returnUrl',Yii::app()->getRequest()->getScriptUrl());
+		return $this->getState('__returnUrl', $defaultUrl===null ? Yii::app()->getRequest()->getScriptUrl() : CHtml::normalizeUrl($defaultUrl));
 	}
 
 	/**

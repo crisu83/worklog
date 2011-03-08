@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2010 Yii Software LLC
+ * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -25,7 +25,7 @@
  * satisfying both filter conditions will they be returned.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CLogRoute.php 2553 2010-10-15 18:01:58Z qiang.xue $
+ * @version $Id: CLogRoute.php 3001 2011-02-24 16:42:44Z alexander.makarow $
  * @package system.logging
  * @since 1.0
  */

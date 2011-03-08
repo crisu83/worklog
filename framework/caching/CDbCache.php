@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2010 Yii Software LLC
+ * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -23,7 +23,7 @@
  * See {@link CCache} manual for common cache operations that are supported by CDbCache.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CDbCache.php 2567 2010-10-22 18:10:54Z qiang.xue $
+ * @version $Id: CDbCache.php 3001 2011-02-24 16:42:44Z alexander.makarow $
  * @package system.caching
  * @since 1.0
  */
@@ -182,7 +182,17 @@ EOD;
 	{
 		$time=time();
 		$sql="SELECT value FROM {$this->cacheTableName} WHERE id='$key' AND (expire=0 OR expire>$time)";
-		return $this->getDbConnection()->createCommand($sql)->queryScalar();
+		$db=$this->getDbConnection();
+		if($db->queryCachingDuration>0)
+		{
+			$duration=$db->queryCachingDuration;
+			$db->queryCachingDuration=0;
+			$result=$db->createCommand($sql)->queryScalar();
+			$db->queryCachingDuration=$duration;
+			return $result;
+		}
+		else
+			return $db->createCommand($sql)->queryScalar();
 	}
 
 	/**
@@ -199,7 +209,18 @@ EOD;
 		$ids=implode("','",$keys);
 		$time=time();
 		$sql="SELECT id, value FROM {$this->cacheTableName} WHERE id IN ('$ids') AND (expire=0 OR expire>$time)";
-		$rows=$this->getDbConnection()->createCommand($sql)->queryRows();
+
+		$db=$this->getDbConnection();
+		if($db->queryCachingDuration>0)
+		{
+			$duration=$db->queryCachingDuration;
+			$db->queryCachingDuration=0;
+			$rows=$db->createCommand($sql)->queryRows();
+			$db->queryCachingDuration=$duration;
+		}
+		else
+			$rows=$db->createCommand($sql)->queryRows();
+
 		$results=array();
 		foreach($keys as $key)
 			$results[$key]=false;

@@ -1,13 +1,18 @@
 /* 
-    Document   : default
-    Created on : 30.12.2010, 0:37:33
-    Author     : Christoffer Niska
-    Description:
-        Defines the default WorkLog style.
+Defines the default WorkLog style.
 */
 
-ul.submenu { margin:0 0 20px 0; padding:0; list-style-type:none; }
-ul.submenu li { display:inline; margin:0 5px 0 0; }
+body { font-family:Calibri, Arial, sans-serif; font-size:0.8em; }
+a { color:#4169e1; font-weight:bold; text-decoration:none; }
+
+#adminmenu { clear:left; float:left; }
+#adminmenu ul { margin:20px; padding:0; list-style-type:none; }
+#adminmenu ul li { display:inline; margin:0 5px 0 0; }
+
+#currentTime { clear:right; float:right; margin:20px 20px 0 20px; font-size:1.5em; }
+
+#submenu ul { margin:0 0 20px 0; padding:0; list-style-type:none; }
+#submenu ul li { display:inline; margin:0 5px 0 0; }
 
 .tag-field { width:140px; }
 .date-field { width:140px; }
@@ -19,7 +24,7 @@ div.form input[type=text],
 div.form input[type=password],
 div.form textarea { 
 	padding:3px; 
-	border:1px solid lightGrey; 
+	border:1px solid lightGray;
 	-webkit-border-radius:4px;
 	-moz-border-radius:4px; 
 	background-image: -webkit-gradient(
@@ -38,10 +43,21 @@ div.form textarea {
 div.form select {
 	min-width:160px;
 }
-div.form input {  }
+div.form input {}
+
+#page { position:relative; }
+
+.dashboard fieldset { margin:0 0 20px 0; padding:10px; border:1px solid lightGray; }
+.dashboard fieldset legend { padding:0 5px; font-size:1.2em; }
+.dashboard .assignment { margin:0 0 10px 0; }
+.dashboard .comment { margin:0 0 10px 0; }
+.dashboard .tags { margin:0 0 10px 0; }
+.dashboard .duration { margin:0 0 10px 0; }
+
+.clear { height:0; }
 
 /*
-	Query UI style.
+Query UI style.
 */
 .ui-widget { margin:0; font-size:11px; }
 

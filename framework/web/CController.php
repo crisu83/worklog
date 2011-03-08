@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2010 Yii Software LLC
+ * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -58,7 +58,7 @@
  * For object-based filters, the '+' and '-' operators are following the class name.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CController.php 2622 2010-11-06 02:47:35Z qiang.xue $
+ * @version $Id: CController.php 3001 2011-02-24 16:42:44Z alexander.makarow $
  * @package system.web
  * @since 1.0
  */
@@ -319,7 +319,10 @@ class CController extends CBaseController
 
 		// if using page caching, we should delay dynamic output replacement
 		if($this->_dynamicOutput!==null && $this->isCachingStackEmpty())
+		{
 			$output=$this->processDynamicOutput($output);
+			$this->_dynamicOutput=null;
+		}
 
 		if($this->_pageStates===null)
 			$this->_pageStates=$this->loadPageStates();
@@ -358,7 +361,7 @@ class CController extends CBaseController
 		if(isset($this->_dynamicOutput[$matches[1]]))
 		{
 			$content=$this->_dynamicOutput[$matches[1]];
-			unset($this->_dynamicOutput[$matches[1]]);
+			$this->_dynamicOutput[$matches[1]]=null;
 		}
 		return $content;
 	}
@@ -376,9 +379,20 @@ class CController extends CBaseController
 		if($actionID==='')
 			$actionID=$this->defaultAction;
 		if(method_exists($this,'action'.$actionID) && strcasecmp($actionID,'s')) // we have actions method
-			return new CInlineAction($this,$actionID);
+			return $this->createInlineAction($actionID);
 		else
 			return $this->createActionFromMap($this->actions(),$actionID,$actionID);
+	}
+
+	/**
+	 * Creates the action to represent an inline controller action.
+	 * @param string $actionID the action ID
+	 * @return CInlineAction the inline action instance
+	 * @since 1.1.7
+	 */
+	protected function createInlineAction($actionID)
+	{
+		return new CInlineAction($this,$actionID);
 	}
 
 	/**
@@ -921,7 +935,11 @@ class CController extends CBaseController
 	 */
 	public function createAbsoluteUrl($route,$params=array(),$schema='',$ampersand='&')
 	{
-		return Yii::app()->getRequest()->getHostInfo($schema).$this->createUrl($route,$params,$ampersand);
+		$url=$this->createUrl($route,$params,$ampersand);
+		if(strpos($url,'http')===0)
+			return $url;
+		else
+			return Yii::app()->getRequest()->getHostInfo($schema).$url;
 	}
 
 	/**
@@ -1013,6 +1031,7 @@ class CController extends CBaseController
 	}
 
 	/**
+	 * Returns whether the caching stack is empty.
 	 * @return boolean whether the caching stack is empty. If not empty, it means currently there are
 	 * some output cache in effect. Note, the return result of this method may change when it is
 	 * called in different output regions, depending on the partition of output caches.

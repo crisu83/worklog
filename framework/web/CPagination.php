@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2010 Yii Software LLC
+ * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -51,7 +51,7 @@
  * </pre>
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CPagination.php 2585 2010-10-29 20:31:06Z qiang.xue $
+ * @version $Id: CPagination.php 3001 2011-02-24 16:42:44Z alexander.makarow $
  * @package system.web
  * @since 1.0
  */

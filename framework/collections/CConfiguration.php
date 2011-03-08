@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2010 Yii Software LLC
+ * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -34,7 +34,7 @@
  * used like an associative array. See {@link CMap} for more details.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CConfiguration.php 2497 2010-09-23 13:28:52Z mdomba $
+ * @version $Id: CConfiguration.php 3001 2011-02-24 16:42:44Z alexander.makarow $
  * @package system.collections
  * @since 1.0
  */

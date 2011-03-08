@@ -4,7 +4,7 @@
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @link http://www.yiiframework.com/
- * @copyright Copyright &copy; 2008-2010 Yii Software LLC
+ * @copyright Copyright &copy; 2008-2011 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
 
@@ -15,7 +15,7 @@
  * in the controller, where the name 'XYZ' can be retrieved from the {@link name} property.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
- * @version $Id: CInlineFilter.php 2497 2010-09-23 13:28:52Z mdomba $
+ * @version $Id: CInlineFilter.php 3026 2011-03-06 10:41:56Z haertl.mike $
  * @package system.web.filters
  * @since 1.0
  */
@@ -44,7 +44,7 @@ class CInlineFilter extends CFilter
 			return $filter;
 		}
 		else
-			throw new CException(Yii::t('yii','Filter "{filter}" is invalid. Controller "{class}" does have the filter method "filter{filter}".',
+			throw new CException(Yii::t('yii','Filter "{filter}" is invalid. Controller "{class}" does not have the filter method "filter{filter}".',
 				array('{filter}'=>$filterName, '{class}'=>get_class($controller))));
 	}
 
