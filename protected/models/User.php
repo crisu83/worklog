@@ -57,7 +57,8 @@ class User extends CActiveRecord
 	public function relations()
 	{
 		return array(
-            'projects'  =>array(self::MANY_MANY, 'Project', 'ProjectUser(projectId, userId)'),
+			'account'	=>array(self::HAS_ONE, 'UserAccount', 'ownerId'),
+			'projects'  =>array(self::MANY_MANY, 'Project', 'ProjectUser(projectId, userId)'),
 		);
 	}
     

@@ -3,6 +3,7 @@
 	<div id="content">
 		<div id="submenu">
 			<?php $this->widget('zii.widgets.CMenu', array(
+				'htmlOptions'=>array('class'=>'plain-menu'),
 				'items'=>$this->menu,
 			)); ?>
 		</div>

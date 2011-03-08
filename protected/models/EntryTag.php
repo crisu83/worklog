@@ -87,23 +87,29 @@ class EntryTag extends CActiveRecord
 		
 		foreach( $names as $name )
 		{
-			if( !in_array($name, $tagIdNameMap) )
+			// Make sure that the name isn't empty
+			// and that the tag doesn't already exist.
+			if( !empty($name) && !in_array($name, $tagIdNameMap) )
 			{
 				$tag = new Tag();
 				$tag->name = $name;
-				$tag->save(false);
-				
+				if( $tag->save(false)===false )
+					throw new Exception(Yii::t('error', 'Failed to update entry tags with message "Saving the tag failed".'));
+
+				// Add the tag to the tag id map.
 				$tagIdNameMap[ $tag->id ] = $tag->name;
 			}
 		}
-		
+
+		// Create the tags for the entry.
 		$tagIdList = array_keys($tagIdNameMap);
 		foreach( $tagIdList as $tagId )
 		{
 			$tag = new EntryTag();
 			$tag->entryId = $entryId;
 			$tag->tagId = $tagId;
-			$tag->save(false);
+			if( $tag->save(false)===false )
+				throw new Exception(Yii::t('error', 'Failed to update entry tags with message "Saving the entry tag failed".'));
 		}
 	}
 }

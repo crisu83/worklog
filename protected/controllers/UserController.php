@@ -30,7 +30,7 @@ class UserController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
+				'actions'=>array('create','update','account'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -143,6 +143,18 @@ class UserController extends Controller
 			$model->attributes=$_GET['User'];
 
 		$this->render('admin',array(
+			'model'=>$model,
+		));
+	}
+
+	/**
+	 * 
+	 * @param integer $id the user id.
+	 */
+	public function actionAccount($id)
+	{
+		$model=$this->loadModel($id);
+		$this->render('account',array(
 			'model'=>$model,
 		));
 	}

@@ -27,8 +27,51 @@ class SiteController extends Controller
 	 */
 	public function actionIndex()
 	{
+		// Redirect non-logged in users to the login page.
 		if( Yii::app()->user->isGuest )
 			$this->redirect(array('//site/login'));
+
+		$model = new EntryStartForm();
+
+		// Entry start form has been submitted.
+		if( isset($_POST['EntryStartForm']) )
+		{
+			$model->attributes = $_POST['EntryStartForm'];
+			$model->tags = $_POST['EntryStartForm']['tags'];
+
+			// Attempt to find an assignment associated with the entry.
+			$assignment = Assignment::model()->findByAttributes(array(
+				'name'=>$model->name,
+			));
+
+			// New entries needs to create an associated assignment.
+			if( $assignment===null )
+			{
+				$assignment = new Assignment();
+				$assignment->projectId = $model->projectId;
+				$assignment->name = $model->name;
+				$assignment->save(false);
+			}
+
+			$entry = new Entry();
+			$entry->ownerId = Yii::app()->user->id;
+			$entry->assignmentId = $assignment->id;
+			$entry->comment = $model->comment;
+			$entry->startDate = empty($entry->startDate) ? date('Y-m-d H:i:s') : $entry->startDate;
+			$entry->endDate = empty($entry->endDate) ? null : $entry->endDate;
+
+			// Attempt to save the entry.
+			if( $entry->save() )
+			{
+				$entry->setState(Entry::STATE_RUNNING); // entry is now running
+				$entry->setTags($model->tags);
+				Yii::app()->user->setEntry($entry); // set the active entry for the web user
+				$this->redirect(Yii::app()->homeUrl);
+			}
+			// Saving the entry failed.
+			else
+				throw new Exception(Yii::t('error', 'Failed to start entry with message "Saving entry failed".'));
+		}
 
 		$entry = Yii::app()->user->getEntry();
 
@@ -45,6 +88,7 @@ class SiteController extends Controller
 		));
 
 		$this->render('index',array(
+			'model'=>$model,
 			'entry'=>$entry,
 			'entryState'=>$entryState,
 			'dataProvider'=>$dataProvider,
