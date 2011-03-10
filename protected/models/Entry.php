@@ -89,8 +89,8 @@ class Entry extends CActiveRecord
 			'comment'       =>'Comment',
 			'tags'			=>'Tags',
 			'duration'      =>'Duration',
-			'startDate'     =>'Start Date',
-			'endDate'       =>'End Date',
+			'startDate'     =>'Started',
+			'endDate'       =>'Ended',
 		);
 	}
 
@@ -206,11 +206,21 @@ class Entry extends CActiveRecord
 		return $this->state;
 	}
 
+	/**
+	 * Returns the duration of this entry.
+	 * @return int|null the duration or null if start date or end date is null.
+	 */
 	public function getDuration()
 	{
 		if( $this->startDate!==null && $this->endDate!==null )
 			return strtotime($this->endDate) - strtotime($this->startDate);
 		else
 			return null;
+	}
+
+	public function getHeader()
+	{
+		return '<strong>'.$this->assignment->project->key.'-'.$this->assignment->id.'</strong> '.
+				CHtml::link($this->assignment->name, array('assignment/view', 'id'=>$this->assignment->id));
 	}
 }

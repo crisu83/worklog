@@ -63,7 +63,7 @@
 			array(
 				'name'=>'assignmentId',
 				'type'=>'raw',
-				'value'=>'"<strong>".$data->assignment->project->key."-".$data->assignment->id."</strong> ".$data->assignment->name',
+				'value'=>'$data->getHeader()',
 			),
 			'comment',
 			array(
