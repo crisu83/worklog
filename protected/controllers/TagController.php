@@ -31,7 +31,7 @@ class TagController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
+				'actions'=>array('create','update','juiAutoComplete'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -152,7 +152,7 @@ class TagController extends Controller
 	{
 		$criteria = new CDbCriteria();
 		$criteria->addSearchCondition('name',$term);
-
+		
 		$tags = Tag::model()->findAll($criteria);
 
 		if( $tags!==array() )
