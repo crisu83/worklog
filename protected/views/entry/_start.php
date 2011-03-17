@@ -49,25 +49,83 @@
 	</div>
 	
 	<div class="row">
+		<style>
+			div.tag-auto-complete { position:relative; }
+			div.tag-auto-complete input { height:18px; margin:0px; padding:2px; resize:none; }
+			div.tag-auto-complete ul {
+				position:absolute;
+				top:0;
+				left:0;
+				height:100%;
+				padding:0;
+				margin:0 0 0 4px;
+				cursor:text;
+				list-style:none;
+				clear:both;
+			}
+			div.tag-auto-complete ul li {
+				float:left;
+				margin:4px 4px 0 0;
+				padding:0 0 0 4px;
+				background-color:#fff08f;
+				/* color:#ffffff; */
+				border:1px solid #d3d3d3;
+				-moz-border-radius:4px;
+				border-radius:4px;
+			}
+			div.tag-auto-complete ul li div {
+				float:right;
+				margin:0 0 0 4px;
+				padding:0 4px;
+				background-color:#f0f0f0;
+				border-left:1px solid #d3d3d3;
+				-moz-border-radius-topright:4px;
+				-moz-border-radius-bottomright:4px;
+				border-top-right-radius:4px;
+				border-bottom-right-radius:4px;
+				color:#a0a0a0;
+				font-weight:bold;
+				cursor:pointer;
+			}
+
+		</style>
 		<script type="text/javascript">
 			// tag/juiAutoComplete
 			$(document).ready(function() {
 
 				$.widget('ui.tagAutoComplete', {
 					_create: function() {
+						var input = $(this.element);
+						var name = input.attr('name');
+						input.attr('name', null);
+
+						input.wrap('<div class="tag-auto-complete">');
+						var container = $(this.element).parent();
+						container.append('<ul class="tac-presentation"></ul>');
+						var presentation = container.children('.tac-presentation');
 
 						$(this.element).keydown(function(event) {
-							// Do not let the field blur if the auto complete list is open and were pushing TAB.
-							if( event.keyCode===$.ui.keyCode.TAB ) {
-								var menu = $(this).data('autocomplete').menu;
-								if( menu.element.is(':visible')===true ) {
-									if( menu.active===undefined ) {
-										console.log(menu.first());
-										console.log($(this).data('autocomplete'))
-									}
+							var ac = $(this).data('autocomplete');
+							var menu = ac.menu;
 
-									event.preventDefault();
-								}
+							// Do not let the field blur if the auto complete list is open and were pushing TAB.
+							switch(event.keyCode) {
+								case $.ui.keyCode.TAB:
+									if( menu.element.is(':visible')===true ) {
+										if( menu.active===undefined ) {
+											// TODO: Get the first item from the list.
+										}
+
+										event.preventDefault();
+									}
+								break;
+								case $.ui.keyCode.BACKSPACE:
+
+									if( $(ac.element).val()==='' ) {
+										presentation.children('li:last').remove();
+										updateInputPadding();
+									}
+								break;
 							}
 						});
 
@@ -103,10 +161,33 @@
 
 								// Add placeholder to get the space at the end.
 								terms.push('');
-								this.value = terms.join(' ');
+								//this.value = terms.join(' ');
+
+								var itemStr = '<li>'+ui.item.value+' <div>x</div>';
+
+								if( name ) {
+									var valueCount = container.find('ul li input[name^="'+name+'"]').length;
+									itemStr += '<input type="hidden" name="'+name+'['+valueCount+']" value="'+ui.item.value+'" />';
+								}
+
+								itemStr += '</li>';
+
+								// Append a new item to presentation.
+								presentation.append(itemStr);
+
+								// Update the padding of the input, so that the text appears next to the presentation.
+								updateInputPadding();
+
+								// Clear the input value.
+								this.value = '';
+
 								return false;
 							}
 						});
+
+						function updateInputPadding() {
+							input.css('padding-left', (presentation.width()+2)+'px');
+						}
 
 						/**
 						 * Function that splits the given value with space.
@@ -123,8 +204,8 @@
 			});
 		</script>
 
-		<?php echo $form->labelEx($model, 'tags'); ?>
-		<?php echo $form->textField($model, 'tags[]'); ?>
+		<?php echo CHtml::label('Tags', 'EntryStartForm[tags]'); ?>
+		<?php echo CHtml::textField('EntryStartForm[tags]', '', array('id'=>'EntryStartForm_tags', 'wrap'=>'off', 'rows'=>1, 'size'=>60)); ?>
 	</div>
 
 	<div class="row buttons">
