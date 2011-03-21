@@ -152,7 +152,7 @@ class TagController extends Controller
 	{
 		$criteria = new CDbCriteria();
 		$criteria->addSearchCondition('name',$term);
-
+		
 		$tags = Tag::model()->findAll($criteria);
 
 		if( $tags!==array() )

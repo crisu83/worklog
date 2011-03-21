@@ -16,4 +16,10 @@ class WebUser extends CWebUser
 	{
 		$this->setEntry(null);
 	}
+
+	// TODO: Implement permissions.
+	public function getIsAdmin()
+	{
+		return (int)$this->id===1;
+	}
 }

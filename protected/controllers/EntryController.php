@@ -30,7 +30,7 @@ class EntryController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','start','pause','resume','stop'),
+				'actions'=>array('create','update','start','pause','resume','stop','user'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -277,6 +277,21 @@ class EntryController extends Controller
 		}
 
 		$this->redirect(Yii::app()->homeUrl);
+	}
+
+	public function actionUser($id)
+	{
+		$criteria = new CDbCriteria();
+		$criteria->addCondition('ownerId=:userId');
+		$criteria->params[':userId'] = $id;
+
+		$dataProvider = new CActiveDataProvider('Entry',array(
+			'criteria'=>$criteria,
+		));
+		
+		$this->render('user',array(
+			'dataProvider'=>$dataProvider,
+		));
 	}
 	
 	/**

@@ -32,13 +32,14 @@
 			'items'=>array(
 				array('label'=>'Dashboard', 'url'=>array('/site/index'), 'visible'=>!Yii::app()->user->isGuest),
 				array('label'=>'Account', 'url'=>array('/user/account', 'id'=>Yii::app()->user->id), 'visible'=>!Yii::app()->user->isGuest),
+				array('label'=>'Entries', 'url'=>array('/entry/user', 'id'=>Yii::app()->user->id), 'visible'=>!Yii::app()->user->isGuest),
 				array('label'=>'Login', 'url'=>array('/site/login'), 'visible'=>Yii::app()->user->isGuest),
 				array('label'=>'Logout ('.Yii::app()->user->name.')', 'url'=>array('/site/logout'), 'visible'=>!Yii::app()->user->isGuest)
 			),
 		)); ?>
 	</div><!-- mainmenu -->
 
-	<?php if( Yii::app()->user->isGuest===false ): ?>
+	<?php if( Yii::app()->user->isAdmin===true ): ?>
 		<div id="adminmenu">
 			<?php $this->widget('zii.widgets.CMenu',array(
 				'htmlOptions'=>array('class'=>'plain-menu'),

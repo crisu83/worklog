@@ -34,7 +34,6 @@ hr.divider { margin:20px 0; }
 	);
 }
 
-
 div.form .row { margin:10px 0; }
 div.form label { margin:0 0 5px 0; }
 div.form input { margin:0; outline:none !important; }
@@ -72,6 +71,41 @@ div.form input.date-field { width:140px; }
 p.hint { color:gray; font-style:italic; }
 
 .clear { height:0; }
+
+.entry-view {
+	margin:0 0 10px 0;
+	padding:10px;
+	border:1px solid lightGray;
+	-webkit-border-radius:4px;
+	-moz-border-radius:4px;
+	background-image: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0.14, rgb(255,255,255)),
+		color-stop(0.5, rgb(250,250,250))
+	);
+	background-image: -moz-linear-gradient(
+		center top,
+		rgb(255,255,255) 14%,
+		rgb(250,250,250) 50%
+	);
+}
+
+.entry-view .left-column {
+	clear:left;
+	float:left;
+}
+.entry-view .left-column .assignment { margin:0 0 10px 0; }
+.entry-view .left-column .comment { /*margin:0 0 10px 0;*/ font-style:italic; }
+
+.entry-view .right-column {
+	clear:right;
+	float:right;
+	text-align:right;
+}
+.entry-view .right-column .owner { margin:0 0 10px 0; }
+/*.entry-view .right-column .times { margin:0 0 10px 0; }*/
 
 /*
 Query UI style.

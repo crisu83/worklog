@@ -1,32 +1,27 @@
-<div class="view">
+<div class="entry-view">
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('id')); ?>:</b>
-	<?php echo CHtml::link(CHtml::encode($data->id), array('view', 'id'=>$data->id)); ?>
-	<br />
+	<div class="left-column">
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('ownerId')); ?>:</b>
-	<?php echo CHtml::encode($data->owner->name); ?>
-	<br />
-	
-	<b><?php echo CHtml::encode($data->getAttributeLabel('assignmentId')); ?>:</b>
-	<?php echo CHtml::encode($data->assignment->name); ?>
-	<br />
+		<div class="assignment"><?php echo $data->getHeader(); ?></div>
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('comment')); ?>:</b>
-	<?php echo CHtml::encode($data->comment); ?>
-	<br />
-	
-	<b><?php echo CHtml::encode($data->getAttributeLabel('tags')); ?>:</b>
-	<?php echo CHtml::encode($data->tags); ?>
-	<br />
+		<div class="comment"><?php echo CHtml::encode($data->comment); ?></div>
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('startDate')); ?>:</b>
-	<?php echo CHtml::encode($data->startDate); ?>
-	<br />
+		<?php /*<div class="tags"><strong><?php echo CHtml::encode($data->getAttributeLabel('tags')); ?> </strong><?php echo $data->getTagsAsString(); ?></div>*/ ?>
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('endDate')); ?>:</b>
-	<?php echo CHtml::encode($data->endDate); ?>
-	<br />
+	</div>
 
+	<div class="right-column">
+
+		<div class="owner"><?php echo CHtml::link($data->owner->name, array('user/view', 'id'=>$data->owner->id)); ?></div>
+
+		<div class="times">
+			<?php echo $data->getDuration(); ?> minutes |
+			<?php echo CHtml::encode(date('H:i', strtotime($data->startDate))); ?> - <?php echo CHtml::encode(date('H:i', strtotime($data->endDate))); ?> |
+			<?php echo CHtml::encode(date('Y-m-d', strtotime($data->startDate))); ?>
+		</div>
+
+	</div>
+
+	<div class="clear">&nbsp;</div>
 
 </div>
