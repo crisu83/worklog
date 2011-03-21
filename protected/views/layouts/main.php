@@ -45,7 +45,7 @@
 				'items'=>array(
 					array('label'=>'Administration:'),
 					array('label'=>'Entries', 'url'=>array('/entry/admin')),
-					array('label'=>'Assignments', 'url'=>array('/assignment/admin')),
+					array('label'=>'Activities', 'url'=>array('/activity/admin')),
 					array('label'=>'Projects', 'url'=>array('/project/admin')),
 					array('label'=>'Tags', 'url'=>array('/tag/admin')),
 					array('label'=>'Users', 'url'=>array('/user/admin')),

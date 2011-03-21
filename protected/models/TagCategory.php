@@ -1,26 +1,17 @@
 <?php
 
 /**
- * This is the model class for table "Assignment".
+ * This is the model class for table "TagCategory".
  *
- * The followings are the available columns in table 'Assignment':
- * @property integer $id
- * @property integer $projectId
+ * The followings are the available columns in table 'TagCategory':
+ * @property string $id
  * @property string $name
- * @property string $created
- * @property string $updated
- * @property integer $deleted
  */
-class Assignment extends CActiveRecord
+class TagCategory extends CActiveRecord
 {
 	/**
-	 * @property array list of tags associated to this entry.
-	 */
-	public $tags;
-
-	/**
 	 * Returns the static model of the specified AR class.
-	 * @return Assignment the static model class
+	 * @return TagCategory the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -32,7 +23,7 @@ class Assignment extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'Assignment';
+		return 'TagCategory';
 	}
 
 	/**
@@ -43,13 +34,11 @@ class Assignment extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('projectId, name', 'required'),
-			array('projectId, deleted', 'numerical', 'integerOnly'=>true),
-			array('name', 'length', 'max'=>255),
-			array('tags', 'safe'),
+			array('name', 'required'),
+			array('name', 'length', 'max'=>10),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, projectId, name, tags, created, updated, deleted', 'safe', 'on'=>'search'),
+			array('id, name', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -58,20 +47,11 @@ class Assignment extends CActiveRecord
 	 */
 	public function relations()
 	{
+		// NOTE: you may need to adjust the relation name and the related
+		// class name for the relations automatically generated below.
 		return array(
-			'project'=>array(self::BELONGS_TO, 'Project', 'projectId'),
 		);
 	}
-	
-	/**
-     * @return array model behaviors.
-     */
-    public function behaviors()
-    {
-        return array(
-            'AuditBehavior'=>'application.components.AuditBehavior',
-        );
-    }
 
 	/**
 	 * @return array customized attribute labels (name=>label)
@@ -79,12 +59,8 @@ class Assignment extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'id'			=>'Id',
-			'projectId'		=>'Project',
-			'name'			=>'Name',
-			'tags'			=>'Tags',
-			'created'		=>'Created',
-			'updated'		=>'Updated',
+			'id' => 'ID',
+			'name' => 'Name',
 		);
 	}
 
@@ -99,12 +75,8 @@ class Assignment extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('id',$this->id);
-		$criteria->compare('projectId',$this->projectId);
+		$criteria->compare('id',$this->id,true);
 		$criteria->compare('name',$this->name,true);
-		$criteria->compare('created',$this->created,true);
-		$criteria->compare('updated',$this->updated,true);
-		$criteria->compare('deleted',$this->deleted);
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,

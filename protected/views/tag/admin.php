@@ -22,7 +22,10 @@ $this->menu=array(
 			'header'=>'#',
 		),
 		'name',
-		'context',
+		array(
+			'name'=>'categoryId',
+			'value'=>'$data->getCategoryName()',
+		),
 		array(
 			'class'=>'CButtonColumn',
 		),

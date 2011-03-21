@@ -16,9 +16,9 @@
 	</div>
 
 	<div class="row">
-		<?php echo $form->labelEx($model,'context'); ?>
-		<?php echo $form->textField($model,'context',array('size'=>60,'maxlength'=>255)); ?>
-		<?php echo $form->error($model,'context'); ?>
+		<?php echo $form->labelEx($model,'category'); ?>
+		<?php echo $form->textField($model,'category',array('size'=>60,'maxlength'=>255)); ?>
+		<?php echo $form->error($model,'category'); ?>
 	</div>
 
 	<div class="row buttons">

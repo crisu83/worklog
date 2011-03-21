@@ -58,11 +58,11 @@ class Entry extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('ownerId, assignmentId, comment', 'required'),
-			array('ownerId, assignmentId', 'numerical', 'integerOnly'=>true),
+			array('ownerId, activityId, comment', 'required'),
+			array('ownerId, activityId', 'numerical', 'integerOnly'=>true),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, ownerId, assignmentId, comment, startDate, endDate', 'safe', 'on'=>'search'),
+			array('id, ownerId, activityId, comment, startDate, endDate', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -72,7 +72,7 @@ class Entry extends CActiveRecord
 	public function relations()
 	{
 		return array(
-            'assignment'	=>array(self::BELONGS_TO, 'Assignment', 'assignmentId'),
+            'activity'	=>array(self::BELONGS_TO, 'Activity', 'activityId'),
             'owner'			=>array(self::BELONGS_TO, 'User', 'ownerId'),
 		);
 	}
@@ -85,7 +85,7 @@ class Entry extends CActiveRecord
 		return array(
 			'id'            =>'Id',
 			'ownerId'       =>'Owner',
-			'assignmentId'	=>'Assignment',
+			'activityId'	=>'Activity',
 			'comment'       =>'Comment',
 			'tags'			=>'Tags',
 			'duration'      =>'Duration',
@@ -107,7 +107,7 @@ class Entry extends CActiveRecord
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('ownerId',$this->ownerId);
-		$criteria->compare('assignmentId',$this->assignmentId);
+		$criteria->compare('activityId',$this->activityId);
 		$criteria->compare('comment',$this->comment,true);
 		$criteria->compare('tags',$this->tags,true);
 		$criteria->compare('startDate',$this->startDate,true);

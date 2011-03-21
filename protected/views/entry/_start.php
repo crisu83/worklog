@@ -24,7 +24,7 @@
 function(request,response) {
 	$.ajax({
 		method: 'post',
-		url: '".Yii::app()->createUrl('assignment/juiAutoComplete')."',
+		url: '".Yii::app()->createUrl('activity/juiAutoComplete')."',
 		data: { 
 			term: request.term,
 			project: $('#EntryStartForm_projectId-button .ui-selectmenu-status').text()
@@ -36,7 +36,7 @@ function(request,response) {
 	});
 }",
 			'options'=>array(
-				'minLength'=>'2',
+				'minLength'=>'1',
 			),
 			'htmlOptions'=>array(
 				'size'=>60,

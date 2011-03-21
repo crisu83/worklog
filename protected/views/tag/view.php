@@ -9,7 +9,7 @@ $this->menu=array(
 	array('label'=>'Create Tag', 'url'=>array('create')),
 	array('label'=>'Update Tag', 'url'=>array('update', 'id'=>$model->id)),
 	array('label'=>'Delete Tag', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-	array('label'=>'Manage Tag', 'url'=>array('admin')),
+	array('label'=>'Manage Tags', 'url'=>array('admin')),
 );
 ?>
 
@@ -20,6 +20,6 @@ $this->menu=array(
 	'attributes'=>array(
 		'id',
 		'name',
-		'context',
+		'category',
 	),
 )); ?>
