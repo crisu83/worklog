@@ -14,7 +14,7 @@
 		<?php $this->widget('application.extensions.juiselectmenu.JuiSelectMenu', array(
 			'model'=>$model,
 			'attribute'=>'assignmentId',
-			'items'=>CHtml::listData(Assignment::model()->findAll('deleted=0'),'id','name'),
+			'items'=>CHtml::listData(Activity::model()->findAll('deleted=0'),'id','name'),
 			'options'=>array(
 				'style'=>'dropdown',
 			)

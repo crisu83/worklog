@@ -8,7 +8,7 @@
 
 		<fieldset>
 			<legend><?php echo CHtml::encode($entry->getStateAsString()); ?></legend>
-			<div class="assignment"><strong><?php echo CHtml::encode($entry->assignment->project->key); ?>-<?php echo CHtml::encode($entry->assignment->id); ?></strong> <?php echo CHtml::encode($entry->assignment->name); ?></div>
+			<div class="activity"><strong><?php echo CHtml::encode($entry->activity->project->key); ?>-<?php echo CHtml::encode($entry->activity->id); ?></strong> <?php echo CHtml::encode($entry->activity->name); ?></div>
 			<div class="comment"><em><?php echo CHtml::encode($entry->comment); ?></em></div>
 			<div class="tags"><strong>Tags</strong> <?php echo $entry->getTagsAsString(); ?></div>
 			<div class="started"><strong>Started</strong> <?php echo CHtml::encode(date('H:i', strtotime($entry->startDate))); ?></div>
@@ -61,9 +61,9 @@
 		'dataProvider'=>$dataProvider,
 		'columns'=>array(
 			array(
-				'name'=>'assignmentId',
+				'name'=>'activityId',
 				'type'=>'raw',
-				'value'=>'$data->getHeader()',
+				'value'=>'"<strong>".$data->activity->project->key."-".$data->activity->id."</strong> ".$data->activity->name',
 			),
 			'comment',
 			array(

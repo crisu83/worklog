@@ -4,6 +4,7 @@
  * This is the model class for table "EntryTag".
  *
  * The followings are the available columns in table 'EntryTag':
+ * @property integer $id
  * @property integer $entryId
  * @property integer $tagId
  */
@@ -54,6 +55,7 @@ class EntryTag extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
+			'id'            => 'Id',
 			'entryId'		=> 'Entry',
 			'tagId'			=> 'Tag',
 		);

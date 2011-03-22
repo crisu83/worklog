@@ -20,20 +20,21 @@
 		<?php $this->widget('zii.widgets.jui.CJuiAutoComplete',array(
 			'model'=>$model,
 			'attribute'=>'name',
-			'source'=>"js:function(request,response) {
-				$.ajax({
-					method: 'post',
-					url: '".Yii::app()->createUrl('assignment/juiAutoComplete')."',
-					data: {
-						term: request.term,
-						project: $('#EntryStartForm_projectId-button .ui-selectmenu-status').text()
-					},
-					dataType: 'json',
-					success: function(data) {
-						response(data);
-					}
-				});
-			}",
+			'source'=>"js:
+function(request,response) {
+	$.ajax({
+		method: 'post',
+		url: '".Yii::app()->createUrl('activity/juiAutoComplete')."',
+		data: { 
+			term: request.term,
+			project: $('#EntryStartForm_projectId-button .ui-selectmenu-status').text()
+		},
+		dataType: 'json',
+		success: function(data) {
+			response(data);
+		}
+	});
+}",
 			'options'=>array(
 				'minLength'=>'2',
 			),

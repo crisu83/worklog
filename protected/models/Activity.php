@@ -1,26 +1,21 @@
 <?php
 
 /**
- * This is the model class for table "User".
+ * This is the model class for table "Activity".
  *
- * The followings are the available columns in table 'user':
+ * The followings are the available columns in table 'Assignment':
  * @property integer $id
+ * @property integer $projectId
  * @property string $name
- * @property string $password
  * @property string $created
  * @property string $updated
  * @property integer $deleted
  */
-class User extends CActiveRecord
+class Activity extends CActiveRecord
 {
-    /**
-     * @property string the password hash.
-     */
-    private static $_passwordHash = 'JXnPbQkcISHdCv0LGraBMu5KejA1ZEl';
-    
 	/**
 	 * Returns the static model of the specified AR class.
-	 * @return User the static model class
+	 * @return Activity the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -32,7 +27,7 @@ class User extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'User';
+		return 'Activity';
 	}
 
 	/**
@@ -43,11 +38,13 @@ class User extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('name, password', 'required'),
-			array('name, password', 'length', 'max'=>255),
+			array('projectId, name', 'required'),
+			array('projectId, deleted', 'numerical', 'integerOnly'=>true),
+			array('name', 'length', 'max'=>255),
+			array('tags', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, name, password, created, updated', 'safe', 'on'=>'search'),
+			array('id, projectId, name, tags, created, updated, deleted', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -57,12 +54,11 @@ class User extends CActiveRecord
 	public function relations()
 	{
 		return array(
-			'account'	=>array(self::HAS_ONE, 'UserAccount', 'ownerId'),
-			'contexts'  =>array(self::MANY_MANY, 'Context', 'ContextUser(contextId, userId)'),
+			'project'=>array(self::BELONGS_TO, 'Project', 'projectId'),
 		);
 	}
-    
-    /**
+	
+	/**
      * @return array model behaviors.
      */
     public function behaviors()
@@ -78,10 +74,11 @@ class User extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'id'            =>'Id',
-			'name'          =>'Name',
-			'password'      =>'Password',
-			'created'       =>'Created',
+			'id'			=>'Id',
+			'projectId'		=>'Project',
+			'name'			=>'Name',
+			'tags'			=>'Tags',
+			'created'		=>'Created',
 			'updated'		=>'Updated',
 		);
 	}
@@ -98,45 +95,14 @@ class User extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
+		$criteria->compare('projectId',$this->projectId);
 		$criteria->compare('name',$this->name,true);
-		$criteria->compare('password',$this->password,true);
 		$criteria->compare('created',$this->created,true);
 		$criteria->compare('updated',$this->updated,true);
+		$criteria->compare('deleted',$this->deleted);
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
 	}
-    
-    /**
-     * Actions to be taken before saving the record.
-     */
-    public function beforeSave()
-    {
-        // We need to encrypt the password before saving.
-        $this->password = $this->encryptPassword($this->password);
-        
-        return parent::beforeSave();
-    }
-    
-    /**
-     * Compares the given password against 
-     * the password saved for the user.
-     * @param string the password to validate.
-     * @return boolean whether the password is valid.
-     */
-    public function validatePassword($password)
-    {       
-        return $this->password===$this->encryptPassword($password);
-    }
-    
-    /**
-     * Encrypts the given password.
-     * @param string the password to encrypt.
-     * @return string the encrypted password.
-     */
-    protected function encryptPassword($password)
-    {
-       return md5($password.self::$_passwordHash);
-    }
 }

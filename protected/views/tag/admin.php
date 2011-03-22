@@ -23,6 +23,10 @@ $this->menu=array(
 		),
 		'name',
 		array(
+			'name'=>'categoryId',
+			'value'=>'$data->getCategoryName()',
+		),
+		array(
 			'class'=>'CButtonColumn',
 		),
 	),

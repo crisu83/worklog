@@ -166,23 +166,23 @@ class EntryController extends Controller
 			$model->attributes = $_POST['EntryStartForm'];
 			$model->tags = $_POST['EntryStartForm']['tags'];
 
-			// Attempt to find an assignment associated with the entry.
-			$assignment = Assignment::model()->findByAttributes(array(
+			// Attempt to find an activity associated with the entry.
+			$activity = Activity::model()->findByAttributes(array(
 				'name'=>$model->name,
 			));
 
-			// New entries needs to create an associated assignment.
-			if( $assignment===null )
+			// New entries needs to create an associated activity.
+			if( $activity===null )
 			{
-				$assignment = new Assignment();
-				$assignment->projectId = $model->projectId;
-				$assignment->name = $model->name;
-				$assignment->save(false);
+				$activity = new Activity();
+				$activity->projectId = $model->projectId;
+				$activity->name = $model->name;
+				$activity->save(false);
 			}
 
 			$entry = new Entry();
 			$entry->ownerId = Yii::app()->user->id;
-			$entry->assignmentId = $assignment->id;
+			$entry->activityId = $activity->id;
 			$entry->comment = $model->comment;
 			$entry->startDate = empty($entry->startDate) ? date('Y-m-d H:i:s') : $entry->startDate;
 			$entry->endDate = empty($entry->endDate) ? null : $entry->endDate;
@@ -236,7 +236,7 @@ class EntryController extends Controller
 		// Create a new entry similar to the paused one.
 		$entry = new Entry();
 		$entry->ownerId = Yii::app()->user->id;
-		$entry->assignmentId = $pausedEntry->assignment->id;
+		$entry->activityId = $pausedEntry->activity->id;
 		$entry->comment = $pausedEntry->comment;
 		$entry->startDate = date('Y-m-d H:i:s');
 		$entry->endDate = null;

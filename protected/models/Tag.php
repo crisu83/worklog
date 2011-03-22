@@ -5,7 +5,10 @@
  *
  * The followings are the available columns in table 'Tag':
  * @property integer $id
+ * @property string $categoryId
  * @property string $name
+ *
+ * @property TagCategory
  */
 class Tag extends CActiveRecord
 {
@@ -38,7 +41,7 @@ class Tag extends CActiveRecord
 			array('name', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, name', 'safe', 'on'=>'search'),
+			array('id, categoryId, name', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -50,6 +53,7 @@ class Tag extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			'category'=>array(self::BELONGS_TO, 'TagCategory', 'categoryId'),
 		);
 	}
 
@@ -61,6 +65,7 @@ class Tag extends CActiveRecord
 		return array(
 			'id'			=>'Id',
 			'name'			=>'Name',
+			'categoryId'    =>'Category',
 		);
 	}
 
@@ -77,17 +82,33 @@ class Tag extends CActiveRecord
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('name',$this->name,true);
+		//$criteria->compare('categoryId',$this->category->name,true);
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
 	}
-	
+
+	public function getCategoryName()
+	{
+		return $this->category instanceof TagCategory ? $this->category->name : '';
+	}
+
+	/**
+	 * Converts a comma-separated string to an array.
+	 * @param $tags the tags.
+	 * @return array the tags.
+	 */
 	public static function string2array($tags)
 	{
 		return preg_split('/\s*,\s*/',trim($tags),-1,PREG_SPLIT_NO_EMPTY);
 	}
 
+	/**
+	 * Converts an array to a comma-separated string.
+	 * @param $tags the tags.
+	 * @return string the tags.
+	 */
 	public static function array2string($tags)
 	{
 		return implode(', ',$tags);

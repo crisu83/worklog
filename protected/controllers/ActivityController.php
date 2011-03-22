@@ -1,6 +1,6 @@
 <?php
 
-class AssignmentController extends Controller
+class ActivityController extends Controller
 {
 	/**
 	 * @property string the default layout for the views.
@@ -53,7 +53,7 @@ class AssignmentController extends Controller
 		
 		$entryDataProvider=new CActiveDataProvider('Entry', array(
 			'criteria'=>array(
-				'condition'=>'assignmentId=:id',
+				'condition'=>'activityId=:id',
 				'params'=>array(':id'=>$model->id)
 			),
 		));
@@ -70,14 +70,14 @@ class AssignmentController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$model=new Assignment;
+		$model=new Activity;
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['Assignment']))
+		if(isset($_POST['Activity']))
 		{
-			$model->attributes=$_POST['Assignment'];
+			$model->attributes=$_POST['Activity'];
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -99,9 +99,9 @@ class AssignmentController extends Controller
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['Assignment']))
+		if(isset($_POST['Activity']))
 		{
-			$model->attributes=$_POST['Assignment'];
+			$model->attributes=$_POST['Activity'];
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -136,7 +136,7 @@ class AssignmentController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Assignment');
+		$dataProvider=new CActiveDataProvider('Activity');
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -147,10 +147,10 @@ class AssignmentController extends Controller
 	 */
 	public function actionAdmin()
 	{
-		$model=new Assignment('search');
+		$model=new Activity('search');
 		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['Assignment']))
-			$model->attributes=$_GET['Assignment'];
+		if(isset($_GET['Activity']))
+			$model->attributes=$_GET['Activity'];
 
 		$this->render('admin',array(
 			'model'=>$model,
@@ -168,15 +168,17 @@ class AssignmentController extends Controller
 			$criteria=new CDbCriteria();
 			$criteria->addCondition('projectId='.$project->id);
 			$criteria->addSearchCondition('name',$term);
-			$criteria->order='name ASC';
+			$criteria->addCondition('id=:term','OR');
+			$criteria->params[':term'] = $term;
+			$criteria->order='name ASC, id DESC';
 			
-			$assignments = Assignment::model()->findAll($criteria);
+			$activities = Activity::model()->findAll($criteria);
 
-			if( $assignments!==array() )
+			if( $activities!==array() )
 			{
 				$names = array();
-				foreach( $assignments as $assignment )
-					$names[] = $assignment->name;
+				foreach( $activities as $activity )
+					$names[] = $activity->name;
 
 				echo CJSON::encode($names);
 			}
@@ -193,7 +195,7 @@ class AssignmentController extends Controller
 	 */
 	public function loadModel($id)
 	{
-		$model=Assignment::model()->findByPk((int)$id);
+		$model=Activity::model()->findByPk((int)$id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
@@ -205,7 +207,7 @@ class AssignmentController extends Controller
 	 */
 	protected function performAjaxValidation($model)
 	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='assignment-form')
+		if(isset($_POST['ajax']) && $_POST['ajax']==='activity-form')
 		{
 			echo CActiveForm::validate($model);
 			Yii::app()->end();

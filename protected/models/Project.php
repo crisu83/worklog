@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This is the model class for table "project".
+ * This is the model class for table "Project".
  *
  * The followings are the available columns in table 'project':
  * @property integer $id
@@ -115,6 +115,6 @@ class Project extends CActiveRecord
 	
 	public function getParentName()
 	{
-		return $this->parent instanceof Project ? $this->parent->name : null;
+		return $this->parent instanceof Project ? $this->parent->name : 'None';
 	}
 }

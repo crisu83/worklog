@@ -5,12 +5,12 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'List Assignment', 'url'=>array('index')),
-	array('label'=>'Create Assignment', 'url'=>array('create')),
+	array('label'=>'List Activity', 'url'=>array('index')),
+	array('label'=>'Create Activity', 'url'=>array('create')),
 );
 ?>
 
-<h1>Manage Assignments</h1>
+<h1>Manage Activities</h1>
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'assignment-grid',

@@ -22,8 +22,8 @@ $this->menu=array(
 			'value'=>'$data->id',
 		),
 		array(
-			'name'=>'assignmentId',
-			'value'=>'$data->assignment->name',
+			'name'=>'activityId',
+			'value'=>'$data->activity->name',
 		),
 		array(
 			'name'=>'ownerId',
