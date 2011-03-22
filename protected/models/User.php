@@ -44,13 +44,9 @@ class User extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
 			array('name, password', 'required'),
 			array('name, password', 'length', 'max'=>255),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
 			array('id, name, password, created, updated', 'safe', 'on'=>'search'),
 		);
 	}
@@ -96,9 +92,6 @@ class User extends CActiveRecord
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
@@ -119,7 +112,7 @@ class User extends CActiveRecord
     {
         // We need to encrypt the password before saving.
         $this->password = $this->encryptPassword($this->password);
-        
+	    
         return parent::beforeSave();
     }
     

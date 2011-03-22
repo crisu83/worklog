@@ -55,7 +55,7 @@
 		</div>
 	<?php endif; ?>
 
-	<div id="currentTime">
+	<div id="clock">
 		<?php echo date('H:i:s'); ?>
 	</div>
 
@@ -74,6 +74,8 @@
 	</div><!-- footer -->
 
 </div><!-- page -->
+
+<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/worklog.js"></script>
 
 </body>
 </html>

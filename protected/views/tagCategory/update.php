@@ -1,12 +1,11 @@
 <?php
 $this->breadcrumbs=array(
-	'Tag Categories'=>array('admin'),
-	$model->name=>array('view','id'=>$model->id),
+	'Tag Categories',
+	$model->name,
 	'Update',
 );
 
 $this->menu=array(
-	array('label'=>'List Tag Category', 'url'=>array('index')),
 	array('label'=>'Create Tag Category', 'url'=>array('create')),
 	array('label'=>'Manage Tag Categories', 'url'=>array('admin')),
 );

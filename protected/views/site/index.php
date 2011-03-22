@@ -1,4 +1,15 @@
-<?php $this->pageTitle=Yii::app()->name; ?>
+<?php
+$this->pageTitle=Yii::app()->name;
+
+if( $entry!==null )
+{
+	Yii::app()->clientScript->registerScript('WorkLog#site.index', "
+		WorkLog.activeEntry = new WorkLog.Entry({$entry->toJSON()});
+
+		console.log(new Date(WorkLog.getActiveEntry().startDate*1000));
+	");
+}
+?>
 
 <h1>Dashboard</h1>
 
@@ -14,9 +25,9 @@
 				<div class="comment"><em><?php echo CHtml::encode($entry->comment); ?></em></div>
 				<div class="tags"><strong>Tags</strong> <?php echo $entry->getTagsAsString(); ?></div>
 				<div class="started"><strong>Started</strong> <?php echo CHtml::encode(date('H:i', strtotime($entry->startDate))); ?></div>
-				<div class="duration"><strong>Duration</strong> <?php echo CHtml::encode(round((time() - strtotime($entry->startDate)) / 60)); ?> minutes</div>
+				<div class="duration"><strong>Duration</strong> <span id="entryDuration"><?php echo CHtml::encode(Entry::formatTime($entry->getDuration())); ?></span></div>
 				<div class="links">
-					<?php if( $entryState===Entry::STATE_RUNNING ): ?>
+					<?php if( $entry->getState()===Entry::STATE_RUNNING ): ?>
 						<?php $this->widget('zii.widgets.jui.CJuiButton', array(
 							'name'=>'pause-button',
 							'buttonType'=>'link',
@@ -59,48 +70,9 @@
 
 		<p class="hint">Below you can see your most recent entries.</p>
 
-		<?php $this->widget('zii.widgets.grid.CGridView', array(
-			'id'=>'recent-entries-grid',
+		<?php $this->widget('zii.widgets.CListView', array(
 			'dataProvider'=>$dataProvider,
-			'columns'=>array(
-				array(
-					'name'=>'activityId',
-					'type'=>'raw',
-					'value'=>'$data->getActivityLink()',
-				),
-				'comment',
-				array(
-					'name'=>'tags',
-					'type'=>'raw',
-					'value'=>'$data->getTagsAsString()',
-				),
-				array(
-					'name'=>'Duration',
-					'value'=>'round($data->getDuration() / 60)." minutes"',
-				),
-				array(
-					'header'=>'Start Time',
-					'value'=>'date("H:i", strtotime($data->startDate))',
-				),
-				array(
-					'header'=>'End Time',
-					'value'=>'date("H:i", strtotime($data->endDate))',
-				),
-				array(
-					'class'=>'CButtonColumn',
-					'buttons'=>array(
-						'view'=>array(
-							'url'=>'Yii::app()->createUrl("//entry/index", array("id"=>$data->id))',
-						),
-						'update'=>array(
-							'url'=>'Yii::app()->createUrl("//entry/update", array("id"=>$data->id))',
-						),
-						'delete'=>array(
-							'url'=>'Yii::app()->createUrl("//entry/delete", array("id"=>$data->id))',
-						),
-					),
-				),
-			),
+			'itemView'=>'//entry/_view',
 		)); ?>
 
 	<?php else: ?>

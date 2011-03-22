@@ -10,7 +10,7 @@ hr.divider { margin:20px 0; }
 #adminmenu ul { margin:20px; padding:0; list-style-type:none; }
 #adminmenu ul li { display:inline; margin:0 5px 0 0; }
 
-#currentTime { clear:right; float:right; margin:20px 20px 0 20px; font-size:1.5em; }
+#clock { clear:right; float:right; margin:20px 20px 0 20px; font-size:1.5em; }
 
 #submenu ul { margin:0 0 20px 0; padding:0; list-style-type:none; }
 #submenu ul li { display:inline; margin:0 5px 0 0; }
@@ -73,7 +73,7 @@ p.hint { color:gray; font-style:italic; }
 .clear { height:0; }
 
 .entry-view {
-	margin:0 0 10px 0;
+	margin:0 0 5px 0;
 	padding:10px;
 	border:1px solid lightGray;
 	-webkit-border-radius:4px;
@@ -92,20 +92,21 @@ p.hint { color:gray; font-style:italic; }
 	);
 }
 
-.entry-view .left-column {
-	clear:left;
-	float:left;
-}
-.entry-view .left-column .activity { margin:0 0 10px 0; }
-.entry-view .left-column .comment { /*margin:0 0 10px 0;*/ font-style:italic; }
+.entry-view .column { height:15px; margin:0; }
+.entry-view .activity { width:200px; }
+.entry-view .comment { font-style:italic; color:#808080; }
+.entry-view .datetime .date { color:#808080; }
+.entry-view .duration { width:120px; font-weight:bold; }
 
-.entry-view .right-column {
-	clear:right;
-	float:right;
-	text-align:right;
-}
-.entry-view .right-column .owner { margin:0 0 10px 0; }
-/*.entry-view .right-column .times { margin:0 0 10px 0; }*/
+/*
+Generic style
+*/
+
+.float-left { float:left; }
+.float-right { float:right; }
+
+.text-left { text-align:left; }
+.text-right { text-align:right; }
 
 /*
 Query UI style.

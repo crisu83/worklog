@@ -35,13 +35,9 @@ class Tag extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
 			array('categoryId, name', 'required'),
 			array('name', 'length', 'max'=>255),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
 			array('id, categoryId, name', 'safe', 'on'=>'search'),
 		);
 	}
@@ -51,8 +47,6 @@ class Tag extends CActiveRecord
 	 */
 	public function relations()
 	{
-		// NOTE: you may need to adjust the relation name and the related
-		// class name for the relations automatically generated below.
 		return array(
 			'category'=>array(self::BELONGS_TO, 'TagCategory', 'categoryId'),
 		);

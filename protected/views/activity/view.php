@@ -1,6 +1,6 @@
 <?php
 $this->breadcrumbs=array(
-	'Activities'=>array('index'),
+	'Activities',
 	$model->name,
 );
 

@@ -39,14 +39,10 @@ class Project extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
 			array('key, name', 'required'),
 			array('key, name', 'length', 'max'=>255),
 			array('parentId', 'safe'),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
 			array('id, key, name, created, updated', 'safe', 'on'=>'search'),
 		);
 	}
@@ -93,9 +89,6 @@ class Project extends CActiveRecord
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
@@ -108,7 +101,8 @@ class Project extends CActiveRecord
 			'criteria'=>$criteria,
 		));
 	}
-	
+
+	// TODO: docblock
 	public function getParentOptions()
 	{
 		if( $this->isNewRecord )
@@ -116,7 +110,8 @@ class Project extends CActiveRecord
 		else
 			return Project::model()->findAll('id!=? AND deleted=0', array($this->id));
 	}
-	
+
+	// TODO: docblock
 	public function getParentName()
 	{
 		return $this->parent instanceof Project ? $this->parent->name : 'None';

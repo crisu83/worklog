@@ -1,12 +1,11 @@
 <?php
 $this->breadcrumbs=array(
-	'Activities'=>array('index'),
+	'Activities',
 	$model->name=>array('view','id'=>$model->id),
 	'Update',
 );
 
 $this->menu=array(
-	array('label'=>'List Activity', 'url'=>array('index')),
 	array('label'=>'Create Activity', 'url'=>array('create')),
 	array('label'=>'View Activity', 'url'=>array('view', 'id'=>$model->id)),
 	array('label'=>'Manage Activities', 'url'=>array('admin')),

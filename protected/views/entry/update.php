@@ -1,12 +1,11 @@
 <?php
 $this->breadcrumbs=array(
-	'Entries'=>array('index'),
-	$model->id=>array('view','id'=>$model->id),
+	'Entries',
+	$model->id,
 	'Update',
 );
 
 $this->menu=array(
-	array('label'=>'List Entry', 'url'=>array('index')),
 	array('label'=>'Create Entry', 'url'=>array('create')),
 	array('label'=>'View Entry', 'url'=>array('view', 'id'=>$model->id)),
 	array('label'=>'Manage Entries', 'url'=>array('admin')),

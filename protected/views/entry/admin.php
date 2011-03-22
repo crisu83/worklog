@@ -1,11 +1,10 @@
 <?php
 $this->breadcrumbs=array(
-	'Entries'=>array('index'),
+	'Entries',
 	'Manage',
 );
 
 $this->menu=array(
-	array('label'=>'List Entry', 'url'=>array('index')),
 	array('label'=>'Create Entry', 'url'=>array('create')),
 );
 ?>
@@ -23,7 +22,8 @@ $this->menu=array(
 		),
 		array(
 			'name'=>'activityId',
-			'value'=>'$data->activity->name',
+			'type'=>'raw',
+			'value'=>'$data->getActivityLink()',
 		),
 		array(
 			'name'=>'ownerId',
@@ -34,6 +34,7 @@ $this->menu=array(
 		'endDate',
 		array(
 			'class'=>'CButtonColumn',
+			'template'=>'{update} {delete}',
 		),
 	),
 )); ?>

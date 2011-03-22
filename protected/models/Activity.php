@@ -38,15 +38,11 @@ class Activity extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
 			array('projectId, name', 'required'),
 			array('projectId, deleted', 'numerical', 'integerOnly'=>true),
 			array('name', 'length', 'max'=>255),
 			array('tags', 'safe'),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
 			array('id, projectId, name, tags, created, updated, deleted', 'safe', 'on'=>'search'),
 		);
 	}
@@ -92,17 +88,15 @@ class Activity extends CActiveRecord
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('projectId',$this->projectId);
 		$criteria->compare('name',$this->name,true);
 		$criteria->compare('created',$this->created,true);
 		$criteria->compare('updated',$this->updated,true);
-		$criteria->compare('deleted',$this->deleted);
+
+		$criteria->addSearchCondition('project.name', $this->projectId);
+		$criteria->with[] = 'project';
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,

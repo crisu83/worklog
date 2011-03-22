@@ -1,11 +1,10 @@
 <?php
 $this->breadcrumbs=array(
-	'Entries'=>array('index'),
+	'Entries',
 	'Create',
 );
 
 $this->menu=array(
-	array('label'=>'List Entry', 'url'=>array('index')),
 	array('label'=>'Manage Entries', 'url'=>array('admin')),
 );
 ?>

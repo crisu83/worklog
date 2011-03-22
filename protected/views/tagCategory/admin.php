@@ -1,6 +1,7 @@
 <?php
 $this->breadcrumbs=array(
 	'Tag Categories',
+	'Manage',
 );
 
 $this->menu=array(

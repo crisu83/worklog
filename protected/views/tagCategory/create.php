@@ -1,6 +1,6 @@
 <?php
 $this->breadcrumbs=array(
-	'Tag Categories'=>array('admin'),
+	'Tag Categories',
 	'Create',
 );
 

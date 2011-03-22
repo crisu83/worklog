@@ -76,13 +76,11 @@ class SiteController extends Controller
 		$projectOptions = CHtml::listData(Project::model()->findAll('deleted=0'),'id','name');
 
 		$entry = Yii::app()->user->getEntry();
-		$entryState = $entry instanceof Entry ? $entry->getState() : null;
 
 		$criteria = new CDbCriteria();
 		$criteria->addCondition('ownerId=:userId');
 		$criteria->addCondition('endDate IS NOT NULL');
 		$criteria->params[':userId'] = Yii::app()->user->id;
-		//$criteria->order = 'id DESC';
 
 		$dataProvider = new CActiveDataProvider('Entry', array(
 			'criteria'=>$criteria,
@@ -91,7 +89,6 @@ class SiteController extends Controller
 		$this->render('index',array(
 			'model'=>$model,
 			'entry'=>$entry,
-			'entryState'=>$entryState,
 			'dataProvider'=>$dataProvider,
 			'projectOptions'=>$projectOptions,
 		));

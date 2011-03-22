@@ -59,13 +59,9 @@ class Entry extends CActiveRecord
 	 */
 	public function rules()
 	{
-		// NOTE: you should only define rules for those attributes that
-		// will receive user inputs.
 		return array(
 			array('ownerId, activityId, comment', 'required'),
 			array('ownerId, activityId', 'numerical', 'integerOnly'=>true),
-			// The following rule is used by search().
-			// Please remove those attributes that should not be searched.
 			array('id, ownerId, activityId, comment, startDate, endDate', 'safe', 'on'=>'search'),
 		);
 	}
@@ -76,8 +72,8 @@ class Entry extends CActiveRecord
 	public function relations()
 	{
 		return array(
-            'activity'	=>array(self::BELONGS_TO, 'Activity', 'activityId'),
-            'owner'			=>array(self::BELONGS_TO, 'User', 'ownerId'),
+            'activity'  =>array(self::BELONGS_TO, 'Activity', 'activityId'),
+            'owner'     =>array(self::BELONGS_TO, 'User', 'ownerId'),
 		);
 	}
 
@@ -104,18 +100,19 @@ class Entry extends CActiveRecord
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('ownerId',$this->ownerId);
-		$criteria->compare('activityId',$this->activityId);
 		$criteria->compare('comment',$this->comment,true);
 		$criteria->compare('tags',$this->tags,true);
 		$criteria->compare('startDate',$this->startDate,true);
 		$criteria->compare('endDate',$this->endDate,true);
+
+		$criteria->addSearchCondition('activity.name', $this->activityId);
+		$criteria->with[] = 'activity';
+
+		$criteria->addSearchCondition('owner.name', $this->ownerId);
+		$criteria->with[] = 'owner';
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
@@ -218,6 +215,8 @@ class Entry extends CActiveRecord
 	{
 		if( $this->startDate!==null && $this->endDate!==null )
 			return strtotime($this->endDate) - strtotime($this->startDate);
+		else if( $this->startDate!==null )
+			return time() - strtotime($this->startDate);
 		else
 			return null;
 	}
@@ -230,5 +229,49 @@ class Entry extends CActiveRecord
 	{
 		return '<strong>'.$this->activity->project->key.'-'.$this->activity->id.'</strong> '.
 				CHtml::link($this->activity->name, array('//activity/view', 'id'=>$this->activity->id));
+	}
+
+	/**
+	 * Returns this entry as JSON.
+	 * @return string the JSON.
+	 */
+	public function toJSON()
+	{
+		return CJSON::encode(array(
+			'id'=>$this->id,
+			'ownerId'=>$this->ownerId,
+			'activityId'=>$this->activityId,
+			'comment'=>$this->comment,
+			'startDate'=>$this->startDate!==null ? strtotime($this->startDate) : null,
+			'endDate'=>$this->endDate!==null ? strtotime($this->endDate) : null,
+		));
+	}
+
+	/**
+	 * Formats seconds as hours, minutes and seconds.
+	 * @param integer $seconds the seconds.
+	 * @return string the formatted time.
+	 */
+	public static function formatTime($seconds)
+	{
+		$hours = 0;
+		$string = '';
+
+		$minutes = $seconds>60 ? floor($seconds/60) : '< 1';
+
+		if( $minutes>60 ) {
+			$hours = floor($minutes/60);
+			$minutes = $minutes % 60;
+		}
+
+		// Append the hours if necessary.
+		if( $hours>0 ) {
+			$string .= $hours.' h ';
+		}
+
+		// Append the minutes.
+		$string .= $minutes.' min ';
+
+		return $string;
 	}
 }

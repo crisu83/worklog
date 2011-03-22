@@ -1,11 +1,10 @@
 <?php
 $this->breadcrumbs=array(
-	'Projects'=>array('index'),
+	'Projects',
 	'Manage',
 );
 
 $this->menu=array(
-	array('label'=>'List Project', 'url'=>array('index')),
 	array('label'=>'Create Project', 'url'=>array('create')),
 );
 ?>

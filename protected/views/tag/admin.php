@@ -1,6 +1,6 @@
 <?php
 $this->breadcrumbs=array(
-	'Tags'=>array('index'),
+	'Tags',
 	'Manage',
 );
 
@@ -29,6 +29,7 @@ $this->menu=array(
 		),
 		array(
 			'class'=>'CButtonColumn',
+			'template'=>'{update} {delete}',
 		),
 	),
 )); ?>
