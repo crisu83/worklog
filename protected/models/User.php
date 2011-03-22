@@ -10,6 +10,10 @@
  * @property string $created
  * @property string $updated
  * @property integer $deleted
+ *
+ * Related records:
+ * @property UserAccount $account
+ * @property array $projects 
  */
 class User extends CActiveRecord
 {
@@ -58,7 +62,7 @@ class User extends CActiveRecord
 	{
 		return array(
 			'account'	=>array(self::HAS_ONE, 'UserAccount', 'ownerId'),
-			'contexts'  =>array(self::MANY_MANY, 'Context', 'ContextUser(contextId, userId)'),
+			'projects'  =>array(self::MANY_MANY, 'Project', 'ProjectUser(projectId, userId)'),
 		);
 	}
     

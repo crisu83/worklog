@@ -59,7 +59,7 @@ class TagCategory extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'id' => 'ID',
+			'id' => 'Id',
 			'name' => 'Name',
 		);
 	}

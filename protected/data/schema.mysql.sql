@@ -1,9 +1,9 @@
 # --------------------------------------------------------
 # Host:                         127.0.0.1
-# Server version:               5.1.36-community-log
+# Server version:               5.1.36-community
 # Server OS:                    Win32
 # HeidiSQL version:             6.0.0.3603
-# Date/time:                    2011-03-22 00:21:06
+# Date/time:                    2011-03-22 18:19:13
 # --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -25,9 +25,13 @@ CREATE TABLE IF NOT EXISTS `Activity` (
   `updated` timestamp NULL DEFAULT NULL,
   `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
-# Data exporting was unselected.
+# Dumping data for table worklog.Activity: ~0 rows (approximately)
+/*!40000 ALTER TABLE `Activity` DISABLE KEYS */;
+INSERT INTO `Activity` (`id`, `projectId`, `name`, `created`, `updated`, `deleted`) VALUES
+	(1, 1, 'Daily Scrum', '2011-03-22 09:43:45', NULL, 0);
+/*!40000 ALTER TABLE `Activity` ENABLE KEYS */;
 
 
 # Dumping structure for table worklog.Entry
@@ -43,9 +47,15 @@ CREATE TABLE IF NOT EXISTS `Entry` (
   `updated` timestamp NULL DEFAULT NULL,
   `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
-# Data exporting was unselected.
+# Dumping data for table worklog.Entry: ~0 rows (approximately)
+/*!40000 ALTER TABLE `Entry` DISABLE KEYS */;
+INSERT INTO `Entry` (`id`, `ownerId`, `activityId`, `comment`, `tags`, `startDate`, `endDate`, `created`, `updated`, `deleted`) VALUES
+	(1, 1, 1, 'Attended the meeting.', NULL, '2011-03-22 09:43:45', '2011-03-22 09:43:56', NULL, NULL, 0),
+	(2, 1, 1, 'Attended the meeting.', NULL, '2011-03-22 09:44:11', '2011-03-22 09:44:15', NULL, NULL, 0),
+	(3, 1, 1, 'Attended the meeting.', NULL, '2011-03-22 09:45:31', '2011-03-22 09:45:34', NULL, NULL, 0);
+/*!40000 ALTER TABLE `Entry` ENABLE KEYS */;
 
 
 # Dumping structure for table worklog.EntryTag
@@ -55,9 +65,15 @@ CREATE TABLE IF NOT EXISTS `EntryTag` (
   `tagId` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `entryId_tagId` (`entryId`,`tagId`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
-# Data exporting was unselected.
+# Dumping data for table worklog.EntryTag: ~0 rows (approximately)
+/*!40000 ALTER TABLE `EntryTag` DISABLE KEYS */;
+INSERT INTO `EntryTag` (`id`, `entryId`, `tagId`) VALUES
+	(1, 1, 4),
+	(2, 2, 4),
+	(3, 3, 4);
+/*!40000 ALTER TABLE `EntryTag` ENABLE KEYS */;
 
 
 # Dumping structure for table worklog.Project
@@ -70,9 +86,15 @@ CREATE TABLE IF NOT EXISTS `Project` (
   `updated` timestamp NULL DEFAULT NULL,
   `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
-# Data exporting was unselected.
+# Dumping data for table worklog.Project: ~0 rows (approximately)
+/*!40000 ALTER TABLE `Project` DISABLE KEYS */;
+INSERT INTO `Project` (`id`, `parentId`, `key`, `name`, `created`, `updated`, `deleted`) VALUES
+	(1, 0, 'PX', 'Project X', '2011-03-22 09:00:02', NULL, 0),
+	(2, 0, 'PY', 'Project Y', '2011-03-22 09:00:09', NULL, 0),
+	(3, 1, 'PZ', 'Project Z', '2011-03-22 09:00:18', '2011-03-22 09:00:33', 0);
+/*!40000 ALTER TABLE `Project` ENABLE KEYS */;
 
 
 # Dumping structure for table worklog.ProjectUser
@@ -84,7 +106,9 @@ CREATE TABLE IF NOT EXISTS `ProjectUser` (
   UNIQUE KEY `contextId_userId` (`projectId`,`userId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-# Data exporting was unselected.
+# Dumping data for table worklog.ProjectUser: ~0 rows (approximately)
+/*!40000 ALTER TABLE `ProjectUser` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ProjectUser` ENABLE KEYS */;
 
 
 # Dumping structure for table worklog.Tag
@@ -93,9 +117,17 @@ CREATE TABLE IF NOT EXISTS `Tag` (
   `categoryId` int(10) unsigned DEFAULT NULL,
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
-# Data exporting was unselected.
+# Dumping data for table worklog.Tag: ~0 rows (approximately)
+/*!40000 ALTER TABLE `Tag` DISABLE KEYS */;
+INSERT INTO `Tag` (`id`, `categoryId`, `name`) VALUES
+	(1, 2, 'Enhancement'),
+	(2, 2, 'BugFix'),
+	(3, 2, 'Feature'),
+	(4, 2, 'Meeting'),
+	(5, 3, 'Overtime');
+/*!40000 ALTER TABLE `Tag` ENABLE KEYS */;
 
 
 # Dumping structure for table worklog.TagCategory
@@ -106,7 +138,13 @@ CREATE TABLE IF NOT EXISTS `TagCategory` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-# Data exporting was unselected.
+# Dumping data for table worklog.TagCategory: 0 rows
+/*!40000 ALTER TABLE `TagCategory` DISABLE KEYS */;
+INSERT INTO `TagCategory` (`id`, `name`) VALUES
+	(1, 'Global'),
+	(2, 'IssueType'),
+	(3, 'WorkType');
+/*!40000 ALTER TABLE `TagCategory` ENABLE KEYS */;
 
 
 # Dumping structure for table worklog.User
@@ -118,9 +156,13 @@ CREATE TABLE IF NOT EXISTS `User` (
   `updated` timestamp NULL DEFAULT NULL,
   `deleted` tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
-# Data exporting was unselected.
+# Dumping data for table worklog.User: ~0 rows (approximately)
+/*!40000 ALTER TABLE `User` DISABLE KEYS */;
+INSERT INTO `User` (`id`, `name`, `password`, `created`, `updated`, `deleted`) VALUES
+	(1, 'Admin', '63c1a25aaf63549bfcc68f8fe3910063', '2010-12-26 20:57:26', '2010-12-26 21:35:32', 0);
+/*!40000 ALTER TABLE `User` ENABLE KEYS */;
 
 
 # Dumping structure for table worklog.UserAccount
@@ -133,7 +175,9 @@ CREATE TABLE IF NOT EXISTS `UserAccount` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-# Data exporting was unselected.
+# Dumping data for table worklog.UserAccount: ~0 rows (approximately)
+/*!40000 ALTER TABLE `UserAccount` DISABLE KEYS */;
+/*!40000 ALTER TABLE `UserAccount` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

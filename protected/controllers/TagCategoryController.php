@@ -1,9 +1,9 @@
 <?php
 
-class TagController extends Controller
+class TagCategoryController extends Controller
 {
 	/**
-	 * @var string the default layout for the views.
+	 * @property string the default layout for the views.
 	 */
 	public $layout='//layouts/column1';
 
@@ -25,12 +25,8 @@ class TagController extends Controller
 	public function accessRules()
 	{
 		return array(
-			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index'),
-				'users'=>array('*'),
-			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','juiAutoComplete'),
+				'actions'=>array('create','update'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -42,22 +38,21 @@ class TagController extends Controller
 			),
 		);
 	}
-
+	
 	/**
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	// TODO: Add support for creating new tag categories.
 	public function actionCreate()
 	{
-		$model=new Tag;
+		$model=new TagCategory;
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['Tag']))
+		if(isset($_POST['TagCategory']))
 		{
-			$model->attributes=$_POST['Tag'];
+			$model->attributes=$_POST['TagCategory'];
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -72,7 +67,6 @@ class TagController extends Controller
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
 	 */
-	// TODO: Add support for creating new tag categories.
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
@@ -80,9 +74,9 @@ class TagController extends Controller
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['Tag']))
+		if(isset($_POST['TagCategory']))
 		{
-			$model->attributes=$_POST['Tag'];
+			$model->attributes=$_POST['TagCategory'];
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -113,49 +107,18 @@ class TagController extends Controller
 	}
 
 	/**
-	 * Lists all models.
-	 */
-	public function actionIndex()
-	{
-		$dataProvider=new CActiveDataProvider('Tag');
-		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
-		));
-	}
-
-	/**
 	 * Manages all models.
 	 */
 	public function actionAdmin()
 	{
-		$model=new Tag('search');
+		$model=new TagCategory('search');
 		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['Tag']))
-			$model->attributes=$_GET['Tag'];
+		if(isset($_GET['TagCategory']))
+			$model->attributes=$_GET['TagCategory'];
 
 		$this->render('admin',array(
 			'model'=>$model,
 		));
-	}
-	
-	public function actionJuiAutoComplete($term)
-	{
-		$criteria = new CDbCriteria();
-		$criteria->addSearchCondition('name',$term);
-		
-		$tags = Tag::model()->findAll($criteria);
-
-		if( $tags!==array() )
-		{
-			$names = array();
-			foreach( $tags as $tag )
-				$names[] = $tag->name;
-
-			echo CJSON::encode($names);
-		}
-
-		// Terminate the application.
-		Yii::app()->end();
 	}
 
 	/**
@@ -165,7 +128,7 @@ class TagController extends Controller
 	 */
 	public function loadModel($id)
 	{
-		$model=Tag::model()->findByPk((int)$id);
+		$model=TagCategory::model()->findByPk((int)$id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
@@ -177,7 +140,7 @@ class TagController extends Controller
 	 */
 	protected function performAjaxValidation($model)
 	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='tag-form')
+		if(isset($_POST['ajax']) && $_POST['ajax']==='tag-category-form')
 		{
 			echo CActiveForm::validate($model);
 			Yii::app()->end();

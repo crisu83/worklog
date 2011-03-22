@@ -8,7 +8,7 @@
 			'debug'=>true,
 			'model'=>$model,
 			'attribute'=>'projectId',
-			'items'=>CHtml::listData(Project::model()->findAll('deleted=0'),'id','name'),
+			'items'=>$projectOptions,
 			'options'=>array(
 				'style'=>'dropdown',
 			),

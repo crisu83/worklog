@@ -10,6 +10,10 @@
  * @property string $created
  * @property string $updated
  * @property integer $deleted
+ *
+ * Related records:
+ * @property Project $parent
+ * @property array $users
  */
 class Project extends CActiveRecord
 {

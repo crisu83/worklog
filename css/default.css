@@ -63,7 +63,7 @@ div.form input.date-field { width:140px; }
 
 .dashboard fieldset { margin:0 0 20px 0; padding:10px; border:1px solid lightGray; }
 .dashboard fieldset legend { padding:0 5px; font-size:1.2em; }
-.dashboard .assignment { margin:0 0 10px 0; }
+.dashboard .activity { margin:0 0 10px 0; }
 .dashboard .comment { margin:0 0 10px 0; }
 .dashboard .tags { margin:0 0 10px 0; }
 .dashboard .duration { margin:0 0 10px 0; }
@@ -96,7 +96,7 @@ p.hint { color:gray; font-style:italic; }
 	clear:left;
 	float:left;
 }
-.entry-view .left-column .assignment { margin:0 0 10px 0; }
+.entry-view .left-column .activity { margin:0 0 10px 0; }
 .entry-view .left-column .comment { /*margin:0 0 10px 0;*/ font-style:italic; }
 
 .entry-view .right-column {

@@ -73,8 +73,9 @@ class SiteController extends Controller
 				throw new Exception(Yii::t('error', 'Failed to start entry with message "Saving entry failed".'));
 		}
 
-		$entry = Yii::app()->user->getEntry();
+		$projectOptions = CHtml::listData(Project::model()->findAll('deleted=0'),'id','name');
 
+		$entry = Yii::app()->user->getEntry();
 		$entryState = $entry instanceof Entry ? $entry->getState() : null;
 
 		$criteria = new CDbCriteria();
@@ -84,7 +85,7 @@ class SiteController extends Controller
 		//$criteria->order = 'id DESC';
 
 		$dataProvider = new CActiveDataProvider('Entry', array(
-			'criteria'=>$criteria
+			'criteria'=>$criteria,
 		));
 
 		$this->render('index',array(
@@ -92,6 +93,7 @@ class SiteController extends Controller
 			'entry'=>$entry,
 			'entryState'=>$entryState,
 			'dataProvider'=>$dataProvider,
+			'projectOptions'=>$projectOptions,
 		));
 	}
 

@@ -7,8 +7,9 @@
  * @property integer $id
  * @property string $categoryId
  * @property string $name
- *
- * @property TagCategory
+ * 
+ * Related records:
+ * @property TagCategory $category
  */
 class Tag extends CActiveRecord
 {
@@ -37,7 +38,7 @@ class Tag extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('name', 'required'),
+			array('categoryId, name', 'required'),
 			array('name', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
@@ -75,28 +76,23 @@ class Tag extends CActiveRecord
 	 */
 	public function search()
 	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
-
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
 		$criteria->compare('name',$this->name,true);
-		//$criteria->compare('categoryId',$this->category->name,true);
+
+		// Join the category to allow filtering by category name.
+		$criteria->with[] = 'category';
+		$criteria->addSearchCondition('category.name',$this->categoryId);
 
 		return new CActiveDataProvider(get_class($this), array(
 			'criteria'=>$criteria,
 		));
 	}
 
-	public function getCategoryName()
-	{
-		return $this->category instanceof TagCategory ? $this->category->name : '';
-	}
-
 	/**
 	 * Converts a comma-separated string to an array.
-	 * @param $tags the tags.
+	 * @param string $tags the tags.
 	 * @return array the tags.
 	 */
 	public static function string2array($tags)
@@ -106,7 +102,7 @@ class Tag extends CActiveRecord
 
 	/**
 	 * Converts an array to a comma-separated string.
-	 * @param $tags the tags.
+	 * @param array $tags the tags.
 	 * @return string the tags.
 	 */
 	public static function array2string($tags)

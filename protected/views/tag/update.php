@@ -8,7 +8,6 @@ $this->breadcrumbs=array(
 $this->menu=array(
 	array('label'=>'List Tag', 'url'=>array('index')),
 	array('label'=>'Create Tag', 'url'=>array('create')),
-	array('label'=>'View Tag', 'url'=>array('view', 'id'=>$model->id)),
 	array('label'=>'Manage Tags', 'url'=>array('admin')),
 );
 ?>

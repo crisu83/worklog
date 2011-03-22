@@ -6,11 +6,15 @@
  * The followings are the available columns in table 'entry':
  * @property integer $id
  * @property integer $ownerId
- * @property integer $assignmentId
+ * @property integer $activityId
  * @property string $comment
  * @property string $startDate
  * @property string $endDate
  * @property integer $deleted
+ *
+ * Related records:
+ * @property Activity $activity
+ * @property User $owner
  */
 class Entry extends CActiveRecord
 {
@@ -218,9 +222,13 @@ class Entry extends CActiveRecord
 			return null;
 	}
 
-	public function getHeader()
+	/**
+	 * Returns the link to the associated actvity.
+	 * @return string the link markup.
+	 */
+	public function getActivityLink()
 	{
-		return '<strong>'.$this->assignment->project->key.'-'.$this->assignment->id.'</strong> '.
-				CHtml::link($this->assignment->name, array('assignment/view', 'id'=>$this->assignment->id));
+		return '<strong>'.$this->activity->project->key.'-'.$this->activity->id.'</strong> '.
+				CHtml::link($this->activity->name, array('//activity/view', 'id'=>$this->activity->id));
 	}
 }

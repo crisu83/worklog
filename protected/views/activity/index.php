@@ -1,6 +1,6 @@
 <?php
 $this->breadcrumbs=array(
-	'Assignments',
+	'Activities',
 );
 
 $this->menu=array(

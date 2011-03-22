@@ -7,6 +7,7 @@ $this->breadcrumbs=array(
 $this->menu=array(
 	array('label'=>'List Tag', 'url'=>array('index')),
 	array('label'=>'Create Tag', 'url'=>array('create')),
+	array('label'=>'Tag Categories', 'url'=>array('//tagCategory/admin')),
 );
 ?>
 
@@ -24,7 +25,7 @@ $this->menu=array(
 		'name',
 		array(
 			'name'=>'categoryId',
-			'value'=>'$data->getCategoryName()',
+			'value'=>'$data->category->name',
 		),
 		array(
 			'class'=>'CButtonColumn',

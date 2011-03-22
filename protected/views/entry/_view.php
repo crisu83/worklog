@@ -2,7 +2,7 @@
 
 	<div class="left-column">
 
-		<div class="assignment"><?php echo $data->getHeader(); ?></div>
+		<div class="activity"><?php echo $data->getActivityLink(); ?></div>
 
 		<div class="comment"><?php echo CHtml::encode($data->comment); ?></div>
 

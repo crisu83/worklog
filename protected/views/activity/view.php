@@ -1,6 +1,6 @@
 <?php
 $this->breadcrumbs=array(
-	'Assignments'=>array('index'),
+	'Activities'=>array('index'),
 	$model->name,
 );
 
@@ -13,7 +13,7 @@ $this->menu=array(
 );
 ?>
 
-<h1>View Activity #<?php echo $model->id; ?></h1>
+<h1>Activity #<?php echo $model->id; ?></h1>
 
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
@@ -29,7 +29,11 @@ $this->menu=array(
 	),
 )); ?>
 
+<hr class="divider" />
+
 <h2>Entries</h2>
+
+<p class="hint">Below you can see all entries associated with this activity.</p>
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'assignment-entry-grid',
@@ -40,8 +44,8 @@ $this->menu=array(
 			'value'=>'$data->id',
 		),
 		array(
-			'name'=>'assignmentId',
-			'value'=>'$data->assignment->name',
+			'name'=>'activityId',
+			'value'=>'$data->activity->name',
 		),
 		array(
 			'name'=>'ownerId',

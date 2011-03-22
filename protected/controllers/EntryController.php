@@ -3,7 +3,7 @@
 class EntryController extends Controller
 {
 	/**
-	 * @var string the default layout for the views.
+	 * @property string the default layout for the views.
 	 */
 	public $layout='//layouts/column1';
 
@@ -144,7 +144,7 @@ class EntryController extends Controller
 	public function actionAdmin()
 	{
 		$model=new Entry('search');
-		$model->unsetAttributes();  // clear any default values
+		$model->unsetAttributes(); // clear any default values
 		if(isset($_GET['Entry']))
 			$model->attributes=$_GET['Entry'];
 
