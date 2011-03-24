@@ -86,12 +86,6 @@
 
 		WorkLog.app = WorkLog.component.App;
 		WorkLog.app.run();
-
-		var Foo = Class.extend({
-			foo: function() {
-				console.log('foo');
-			}
-		});
 		
 	})(jQuery);
 

@@ -13,7 +13,7 @@ class UserController extends Controller
 	public function filters()
 	{
 		return array(
-			'accessControl', // perform access control for CRUD operations
+			'accessControl',
 		);
 	}
 
@@ -25,19 +25,19 @@ class UserController extends Controller
 	public function accessRules()
 	{
 		return array(
-			array('allow',  // allow all users to perform 'index' and 'view' actions
+			array('allow',
 				'actions'=>array('index','view'),
 				'users'=>array('*'),
 			),
-			array('allow', // allow authenticated user to perform 'create' and 'update' actions
+			array('allow',
 				'actions'=>array('create','update','account'),
 				'users'=>array('@'),
 			),
-			array('allow', // allow admin user to perform 'admin' and 'delete' actions
+			array('allow',
 				'actions'=>array('admin','delete'),
 				'users'=>array('admin'),
 			),
-			array('deny',  // deny all users
+			array('deny',
 				'users'=>array('*'),
 			),
 		);
@@ -154,8 +154,26 @@ class UserController extends Controller
 	public function actionAccount($id)
 	{
 		$model=$this->loadModel($id);
+		$account = $model->account;
+
+		if( $account===null )
+			$account = new UserAccount();
+
+		// Uncomment the following line if AJAX validation is needed
+		// $this->performAjaxValidation($model);
+
+		if(isset($_POST['UserAccount']))
+		{
+			$account->attributes=$_POST['UserAccount'];
+			$account->userId = $model->id;
+
+			if($account->save())
+				$this->redirect(array('account','id'=>$model->id));
+		}
+
 		$this->render('account',array(
 			'model'=>$model,
+			'account'=>$account,
 		));
 	}
 
