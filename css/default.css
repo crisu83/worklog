@@ -1,0 +1,116 @@
+/* 
+Defines the default WorkLog style.
+*/
+
+body { font-family:Calibri, Arial, sans-serif; font-size:0.8em; }
+a { color:#4169e1; font-weight:bold; text-decoration:none; }
+hr.divider { margin:20px 0; }
+
+#adminmenu { clear:left; float:left; }
+#adminmenu ul { margin:20px; padding:0; list-style-type:none; }
+#adminmenu ul li { display:inline; margin:0 5px 0 0; }
+
+#clock { clear:right; float:right; margin:20px 20px 0 20px; font-size:1.5em; }
+
+#submenu ul { margin:0 0 20px 0; padding:0; list-style-type:none; }
+#submenu ul li { display:inline; margin:0 5px 0 0; }
+
+.plain-menu li a {
+	padding:5px;
+	border:1px solid lightGray;
+	-webkit-border-radius:4px;
+	-moz-border-radius:4px; 
+	background-image: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0.14, rgb(255,255,255)),
+		color-stop(0.5, rgb(250,250,250))
+	);
+	background-image: -moz-linear-gradient(
+		center top,
+		rgb(255,255,255) 14%,
+		rgb(250,250,250) 50%
+	);
+}
+
+div.form .row { margin:10px 0; }
+div.form label { margin:0 0 5px 0; }
+div.form input { margin:0; outline:none !important; }
+div.form input[type=text],
+div.form input[type=password],
+div.form textarea {
+	padding:3px;
+	border:1px solid lightGray;
+	-webkit-border-radius:4px;
+	-moz-border-radius:4px;
+	background-image: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0.14, rgb(255,255,255)),
+		color-stop(0.5, rgb(250,250,250))
+	);
+	background-image: -moz-linear-gradient(
+	center top,
+	rgb(255,255,255) 14%,
+	rgb(250,250,250) 50%
+	);
+}
+div.form select { min-width:160px; }
+div.form input.tag-field { width:140px; }
+div.form input.date-field { width:140px; }
+
+.dashboard fieldset { margin:0 0 20px 0; padding:10px; border:1px solid lightGray; }
+.dashboard fieldset legend { padding:0 5px; font-size:1.2em; }
+.dashboard .activity { margin:0 0 10px 0; }
+.dashboard .comment { margin:0 0 10px 0; }
+.dashboard .tags { margin:0 0 10px 0; }
+.dashboard .duration { margin:0 0 10px 0; }
+
+p.hint { color:gray; font-style:italic; }
+
+.clear { height:0; }
+
+.entry-view {
+	margin:0 0 5px 0;
+	padding:10px;
+	border:1px solid lightGray;
+	-webkit-border-radius:4px;
+	-moz-border-radius:4px;
+	background-image: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0.14, rgb(255,255,255)),
+		color-stop(0.5, rgb(250,250,250))
+	);
+	background-image: -moz-linear-gradient(
+		center top,
+		rgb(255,255,255) 14%,
+		rgb(250,250,250) 50%
+	);
+}
+
+.entry-view .column { height:15px; margin:0; }
+.entry-view .activity { width:200px; }
+.entry-view .comment { font-style:italic; color:#808080; }
+.entry-view .datetime .date { color:#808080; }
+.entry-view .duration { width:120px; font-weight:bold; }
+
+/*
+Generic style
+*/
+
+.float-left { float:left; }
+.float-right { float:right; }
+
+.text-left { text-align:left; }
+.text-right { text-align:right; }
+
+/*
+Query UI style.
+*/
+.ui-widget { margin:0; font-size:11px; }
+
+.ui-helper-hidden-accessible { clip:auto !important; }
