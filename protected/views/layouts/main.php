@@ -17,6 +17,11 @@
 	<title><?php echo CHtml::encode($this->pageTitle); ?></title>
 	
 	<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/default.css" />
+
+	<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/namespaces.js"></script>
+	<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/WorkLog.js"></script>
+	<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/worklog/Base.js"></script>
+	<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/worklog/components/App.js"></script>
 </head>
 
 <body>
@@ -75,7 +80,22 @@
 
 </div><!-- page -->
 
-<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/worklog.js"></script>
+<script type="text/javascript">
+
+	(function($) {
+
+		WorkLog.app = WorkLog.component.App;
+		WorkLog.app.run();
+
+		var Foo = Class.extend({
+			foo: function() {
+				console.log('foo');
+			}
+		});
+		
+	})(jQuery);
+
+</script>
 
 </body>
 </html>

@@ -4,9 +4,7 @@ $this->pageTitle=Yii::app()->name;
 if( $entry!==null )
 {
 	Yii::app()->clientScript->registerScript('WorkLog#site.index', "
-		WorkLog.activeEntry = new WorkLog.Entry({$entry->toJSON()});
-
-		console.log(new Date(WorkLog.getActiveEntry().startDate*1000));
+		WorkLog.app.setActiveEntryData({$entry->toJSON()});
 	");
 }
 ?>
