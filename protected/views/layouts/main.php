@@ -17,11 +17,16 @@
 	<title><?php echo CHtml::encode($this->pageTitle); ?></title>
 	
 	<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/default.css" />
+	<link rel="stylesheet" type="text/css" href="<?php echo Yii::app()->request->baseUrl; ?>/css/jui/jquery.ui.tagautocomplete.css" />
 
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/namespaces.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/WorkLog.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/worklog/Base.js"></script>
 	<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/worklog/components/App.js"></script>
+
+	<script src="<?php echo Yii::app()->request->baseUrl; ?>/js/jquery.ui.tagautocomplete.js"></script>
+
+
 </head>
 
 <body>
